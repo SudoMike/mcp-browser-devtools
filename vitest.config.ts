@@ -14,5 +14,6 @@ export default defineConfig({
         singleFork: true, // Run all tests in a single fork (sequential)
       },
     },
+    include: ["tests/**/*.test.ts"], // Only run .ts test files
   },
 });
