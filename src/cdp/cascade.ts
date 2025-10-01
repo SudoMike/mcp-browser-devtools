@@ -167,20 +167,41 @@ export async function findWinningDeclaration(
     return {};
   }
 
-  // Sort by cascade order
-  // 1. !important declarations come first
-  // 2. Later declarations win over earlier ones
-  const importantDeclarations = allDeclarations.filter(
+  // Sort by CSS cascade order (proper specificity)
+  // CSS Cascade priority: https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade
+  // 1. Inline !important
+  // 2. Stylesheet !important
+  // 3. Inline normal
+  // 4. Stylesheet normal (by specificity, then source order)
+
+  const inlineDeclarations = allDeclarations.filter(
+    (d) => d.rule.origin === "inline",
+  );
+  const stylesheetDeclarations = allDeclarations.filter(
+    (d) => d.rule.origin !== "inline",
+  );
+
+  // Separate by !important
+  const inlineImportant = inlineDeclarations.filter((d) => d.property.important);
+  const stylesheetImportant = stylesheetDeclarations.filter(
     (d) => d.property.important,
   );
-  const normalDeclarations = allDeclarations.filter(
+  const inlineNormal = inlineDeclarations.filter((d) => !d.property.important);
+  const stylesheetNormal = stylesheetDeclarations.filter(
     (d) => !d.property.important,
   );
 
-  const winner =
-    importantDeclarations.length > 0
-      ? importantDeclarations[importantDeclarations.length - 1]
-      : normalDeclarations[normalDeclarations.length - 1];
+  // Pick winner by cascade priority
+  let winner;
+  if (inlineImportant.length > 0) {
+    winner = inlineImportant[inlineImportant.length - 1];
+  } else if (stylesheetImportant.length > 0) {
+    winner = stylesheetImportant[stylesheetImportant.length - 1];
+  } else if (inlineNormal.length > 0) {
+    winner = inlineNormal[inlineNormal.length - 1];
+  } else {
+    winner = stylesheetNormal[stylesheetNormal.length - 1];
+  }
 
   // Convert to CssDeclarationSource
   const winnerSource = await declarationToSource(cdpSession, winner);
