@@ -13,8 +13,9 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "tsc && vitest run",
-    "test:watch": "tsc && vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "format": "biome format --write .",
     "format:check": "biome format .",
