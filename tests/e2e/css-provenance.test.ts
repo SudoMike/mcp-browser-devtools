@@ -39,84 +39,105 @@ describe("CSS Provenance and Cascade", () => {
       await sessionStart({}, loadedConfig);
       await navigate({ url: "/shorthand-test.html" });
 
-      await expect(async () => {
+      try {
         await getCssProvenance({
           target: { kind: "selector", value: ".margin-box" },
           property: "margin",
         });
-      }).rejects.toThrow(/shorthand/i);
+        expect.fail("Should have thrown an error for shorthand property");
+      } catch (err: any) {
+        expect(err.error.message).toMatch(/shorthand/i);
+      }
     });
 
     it("should reject shorthand property 'border'", async () => {
       await sessionStart({}, loadedConfig);
       await navigate({ url: "/shorthand-test.html" });
 
-      await expect(async () => {
+      try {
         await getCssProvenance({
           target: { kind: "selector", value: ".border-box" },
           property: "border",
         });
-      }).rejects.toThrow(/shorthand/i);
+        expect.fail("Should have thrown an error for shorthand property");
+      } catch (err: any) {
+        expect(err.error.message).toMatch(/shorthand/i);
+      }
     });
 
     it("should reject shorthand property 'padding'", async () => {
       await sessionStart({}, loadedConfig);
       await navigate({ url: "/shorthand-test.html" });
 
-      await expect(async () => {
+      try {
         await getCssProvenance({
           target: { kind: "selector", value: ".margin-box" },
           property: "padding",
         });
-      }).rejects.toThrow(/shorthand/i);
+        expect.fail("Should have thrown an error for shorthand property");
+      } catch (err: any) {
+        expect(err.error.message).toMatch(/shorthand/i);
+      }
     });
 
     it("should reject shorthand property 'background'", async () => {
       await sessionStart({}, loadedConfig);
       await navigate({ url: "/shorthand-test.html" });
 
-      await expect(async () => {
+      try {
         await getCssProvenance({
           target: { kind: "selector", value: ".background-box" },
           property: "background",
         });
-      }).rejects.toThrow(/shorthand/i);
+        expect.fail("Should have thrown an error for shorthand property");
+      } catch (err: any) {
+        expect(err.error.message).toMatch(/shorthand/i);
+      }
     });
 
     it("should reject shorthand property 'font'", async () => {
       await sessionStart({}, loadedConfig);
       await navigate({ url: "/shorthand-test.html" });
 
-      await expect(async () => {
+      try {
         await getCssProvenance({
           target: { kind: "selector", value: ".font-box" },
           property: "font",
         });
-      }).rejects.toThrow(/shorthand/i);
+        expect.fail("Should have thrown an error for shorthand property");
+      } catch (err: any) {
+        expect(err.error.message).toMatch(/shorthand/i);
+      }
     });
 
     it("should reject shorthand property 'flex'", async () => {
       await sessionStart({}, loadedConfig);
       await navigate({ url: "/shorthand-test.html" });
 
-      await expect(async () => {
+      try {
         await getCssProvenance({
           target: { kind: "selector", value: ".flex-box" },
           property: "flex",
         });
-      }).rejects.toThrow(/shorthand/i);
+        expect.fail("Should have thrown an error for shorthand property");
+      } catch (err: any) {
+        expect(err.error.message).toMatch(/shorthand/i);
+      }
     });
 
     it("should reject shorthand property 'border-top'", async () => {
       await sessionStart({}, loadedConfig);
       await navigate({ url: "/shorthand-test.html" });
 
-      await expect(async () => {
+      try {
         await getCssProvenance({
           target: { kind: "selector", value: ".border-box" },
           property: "border-top",
         });
-      }).rejects.toThrow(/shorthand/i);
+        expect.fail("Should have thrown an error for shorthand property");
+      } catch (err: any) {
+        expect(err.error.message).toMatch(/shorthand/i);
+      }
     });
   });
 
