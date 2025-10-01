@@ -35,7 +35,7 @@ cp config.json my-config.json
 3. **Customize `hooks.js`** for your app's login flow:
 
 ```javascript
-export async function startLoggedIn({ page, baseURL, env }) {
+export async function startLoggedIn({ page, baseURL }) {
   if (baseURL) {
     // Replace with your actual login flow
     await page.goto(baseURL + '/login');

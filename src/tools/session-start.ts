@@ -59,7 +59,6 @@ export async function sessionStart(
       // Execute hook once with page available
       const hookContext = {
         page: session.page,
-        env: process.env as Record<string, string>,
         baseURL: loadedConfig.resolved.playwright.baseURL,
       };
 

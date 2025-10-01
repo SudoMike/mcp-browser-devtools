@@ -53,7 +53,6 @@ export type HookFunction = (
 export interface HookContext {
   page: Page;
   baseURL?: string;
-  env: Record<string, string>;
 }
 
 export interface HookResult {

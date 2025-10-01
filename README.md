@@ -50,7 +50,7 @@ npm install playwright
 2. **Create a hooks module** (`devtools-hooks.js`):
 
 ```javascript
-export async function startDefault({ page, baseURL, env }) {
+export async function startDefault({ page, baseURL }) {
   // Optional: start your app server, seed database, etc.
   // Navigate to homepage
   await page.goto(baseURL);
@@ -62,7 +62,7 @@ export async function startDefault({ page, baseURL, env }) {
   };
 }
 
-export async function startLoggedIn({ page, baseURL, env }) {
+export async function startLoggedIn({ page, baseURL }) {
   // Start app server, seed test database with user, etc.
   // Then perform login to get browser into logged-in state
   await page.goto(baseURL + '/login');
@@ -332,9 +332,8 @@ All hooks receive a context object with the Playwright page and configuration:
 
 ```typescript
 {
-  page: Page;                  // Playwright page instance
-  baseURL?: string;            // Configured base URL
-  env: Record<string, string>; // Environment variables
+  page: Page;       // Playwright page instance
+  baseURL?: string; // Configured base URL
 }
 ```
 
@@ -362,7 +361,7 @@ Hooks should return (or return a Promise of):
 
 **Guest/Public Scenario:**
 ```javascript
-export async function startGuest({ page, baseURL, env }) {
+export async function startGuest({ page, baseURL }) {
   await page.goto(baseURL);
   return {};
 }
@@ -370,7 +369,7 @@ export async function startGuest({ page, baseURL, env }) {
 
 **Authenticated Scenario:**
 ```javascript
-export async function startLoggedIn({ page, baseURL, env }) {
+export async function startLoggedIn({ page, baseURL }) {
   // Reuse your e2e test setup code
   await seedTestDatabase({ email: 'test@example.com' });
   await page.goto(baseURL + '/login');
@@ -389,7 +388,7 @@ export async function startLoggedIn({ page, baseURL, env }) {
 
 **Admin Scenario:**
 ```javascript
-export async function startAdmin({ page, baseURL, env }) {
+export async function startAdmin({ page, baseURL }) {
   await seedAdminUser();
   await loginAsAdmin(page, baseURL);
   return { stop: cleanupAdmin };

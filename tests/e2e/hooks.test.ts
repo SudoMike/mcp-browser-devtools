@@ -53,7 +53,6 @@ describe("Hook Execution", () => {
       expect(context).toBeDefined();
       expect(context?.page).toBeDefined();
       expect(context?.baseURL).toBe("http://localhost:3456");
-      expect(context?.env).toBeDefined();
     });
 
     it("should support different scenarios", async () => {
