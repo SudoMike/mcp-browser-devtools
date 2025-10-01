@@ -1,0 +1,26 @@
+{
+  "playwright": {
+    "baseURL": "https://example.com",
+    "headless": true
+  },
+  "hooks": {
+    "modulePath": "./hooks.js",
+    "scenarios": {
+      "default": {
+        "use": "startDefault"
+      },
+      "loggedIn": {
+        "use": "startLoggedIn"
+      }
+    }
+  },
+  "policy": {
+    "singleInstance": true,
+    "idleMs": 300000,
+    "allowedOrigins": ["https://example.com"]
+  },
+  "timeouts": {
+    "navigationMs": 15000,
+    "queryMs": 8000
+  }
+}

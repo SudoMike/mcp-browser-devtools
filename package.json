@@ -1,0 +1,37 @@
+{
+  "name": "mcp-devtools",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MCP server for DevTools-style browser inspection via Playwright",
+  "main": "dist/index.js",
+  "bin": {
+    "mcp-devtools": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mcp",
+    "devtools",
+    "playwright",
+    "cdp",
+    "browser",
+    "inspection"
+  ],
+  "author": "",
+  "license": "ISC",
+  "peerDependencies": {
+    "playwright": "^1.40.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.1",
+    "playwright": "^1.55.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.2",
+    "dotenv": "^17.2.3"
+  }
+}

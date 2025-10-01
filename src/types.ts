@@ -1,0 +1,283 @@
+import type { Browser, BrowserContext, Page, CDPSession } from 'playwright';
+
+// ============================================================================
+// Configuration Types
+// ============================================================================
+
+export interface Config {
+  playwright?: PlaywrightConfig;
+  hooks?: HooksConfig;
+  policy?: PolicyConfig;
+  timeouts?: TimeoutsConfig;
+}
+
+export interface PlaywrightConfig {
+  baseURL?: string;
+  headless?: boolean;
+  storageStatePath?: string;
+}
+
+export interface HooksConfig {
+  modulePath: string;
+  envPath?: string;
+  scenarios?: Record<string, ScenarioConfig>;
+}
+
+export interface ScenarioConfig {
+  use: string; // Function name to call from hooks module
+}
+
+export interface PolicyConfig {
+  singleInstance?: boolean;
+  idleMs?: number;
+  allowedOrigins?: string[];
+}
+
+export interface TimeoutsConfig {
+  navigationMs?: number;
+  queryMs?: number;
+}
+
+// ============================================================================
+// Hooks Module Types
+// ============================================================================
+
+export interface HooksModule {
+  [key: string]: HookFunction;
+}
+
+export type HookFunction = (context: HookContext) => HookResult | Promise<HookResult>;
+
+export interface HookContext {
+  page?: Page;
+  baseURL?: string;
+  projectRoot: string;
+  env: Record<string, string>;
+}
+
+export interface HookResult {
+  stop?: () => void | Promise<void>;
+}
+
+// ============================================================================
+// Session Types
+// ============================================================================
+
+export interface SessionState {
+  browser: Browser;
+  context: BrowserContext;
+  page: Page;
+  cdpSession: CDPSession;
+  hookStopFn?: () => void | Promise<void>;
+  config: ResolvedConfig;
+  lastUsedAt: number;
+}
+
+export interface ResolvedConfig {
+  playwright: {
+    baseURL?: string;
+    headless: boolean;
+    storageStatePath?: string;
+  };
+  policy: {
+    singleInstance: boolean;
+    idleMs: number;
+    allowedOrigins?: string[];
+  };
+  timeouts: {
+    navigationMs: number;
+    queryMs: number;
+  };
+}
+
+// ============================================================================
+// Tool Parameter Types
+// ============================================================================
+
+export interface SessionStartParams {
+  scenario?: string;
+}
+
+export interface NavigateParams {
+  url: string;
+  wait?: 'load' | 'domcontentloaded' | 'networkidle';
+}
+
+export interface ElementTarget {
+  kind: 'id' | 'selector';
+  value: string;
+}
+
+export interface GetElementParams {
+  target: ElementTarget;
+  include?: Array<'boxModel' | 'computed' | 'attributes' | 'role'>;
+  maxResults?: number;
+}
+
+export interface GetCssProvenanceParams {
+  target: ElementTarget;
+  property: string;
+  includeContributors?: boolean;
+  maxResults?: number;
+}
+
+// ============================================================================
+// Tool Result Types
+// ============================================================================
+
+export interface SessionStartResult {
+  ok: boolean;
+}
+
+export interface SessionStopResult {
+  ok: boolean;
+}
+
+export interface NavigateResult {
+  finalUrl: string;
+}
+
+export interface GetElementResult {
+  matchCount: number;
+  results: ElementInfo[];
+}
+
+export interface ElementInfo {
+  exists: boolean;
+  nodeName?: string;
+  attributes?: Record<string, string>;
+  role?: string;
+  boxModel?: BoxModel;
+  computed?: Record<string, string>;
+}
+
+export interface BoxModel {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  content: Quad;
+  padding: Quad;
+  border: Quad;
+  margin: Quad;
+}
+
+export interface Quad {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface GetCssProvenanceResult {
+  matchCount: number;
+  results: CssProvenanceInfo[];
+}
+
+export interface CssProvenanceInfo {
+  property: string;
+  computedValue: string | null;
+  winner?: CssDeclarationSource;
+  contributors?: CssDeclarationSource[];
+}
+
+export interface CssDeclarationSource {
+  source: 'inline' | 'stylesheet' | 'attribute';
+  selector?: string;
+  stylesheetUrl?: string;
+  line?: number;
+  column?: number;
+  important?: boolean;
+  snippet?: string;
+  value?: string;
+}
+
+// ============================================================================
+// CDP Protocol Types (subset we need)
+// ============================================================================
+
+export interface CDPNode {
+  nodeId: number;
+  nodeType: number;
+  nodeName: string;
+  localName: string;
+  nodeValue: string;
+  attributes?: string[];
+}
+
+export interface CDPDocument {
+  nodeId: number;
+}
+
+export interface CDPComputedStyle {
+  name: string;
+  value: string;
+}
+
+export interface CDPMatchedRule {
+  rule: CDPRule;
+  matchingSelectors: number[];
+}
+
+export interface CDPRule {
+  selectorList: CDPSelectorList;
+  style: CDPStyle;
+  origin: 'user-agent' | 'user' | 'inspector' | 'regular';
+  styleSheetId?: string;
+}
+
+export interface CDPSelectorList {
+  selectors: CDPSelector[];
+  text: string;
+}
+
+export interface CDPSelector {
+  text: string;
+}
+
+export interface CDPStyle {
+  cssProperties: CDPProperty[];
+  shorthandEntries: CDPShorthandEntry[];
+  styleSheetId?: string;
+  range?: CDPSourceRange;
+}
+
+export interface CDPProperty {
+  name: string;
+  value: string;
+  important?: boolean;
+  implicit?: boolean;
+  text?: string;
+  parsedOk?: boolean;
+  disabled?: boolean;
+  range?: CDPSourceRange;
+}
+
+export interface CDPShorthandEntry {
+  name: string;
+  value: string;
+  important?: boolean;
+}
+
+export interface CDPSourceRange {
+  startLine: number;
+  startColumn: number;
+  endLine: number;
+  endColumn: number;
+}
+
+export interface CDPStyleSheetHeader {
+  styleSheetId: string;
+  sourceURL: string;
+  origin: string;
+  title: string;
+  disabled: boolean;
+  isInline: boolean;
+  isMutable: boolean;
+  isConstructed: boolean;
+  startLine: number;
+  startColumn: number;
+  length: number;
+  endLine: number;
+  endColumn: number;
+}
