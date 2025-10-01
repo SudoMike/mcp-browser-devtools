@@ -50,28 +50,30 @@ npm install playwright
 2. **Create a hooks module** (`devtools-hooks.js`):
 
 ```javascript
-export async function startDefault({ projectRoot, env }) {
+export async function startDefault({ page, baseURL, projectRoot, env }) {
   // Optional: start your app server, seed database, etc.
+  // Navigate to homepage
+  await page.goto(baseURL);
+
   return {
     stop: async () => {
-      // Cleanup
+      // Cleanup: stop servers, etc.
     }
   };
 }
 
-export async function startLoggedIn({ page, baseURL }) {
-  // Perform login
-  if (page && baseURL) {
-    await page.goto(baseURL + '/login');
-    await page.fill('input[name="email"]', 'test@example.com');
-    await page.fill('input[name="password"]', 'password123');
-    await page.click('button[type="submit"]');
-    await page.waitForURL('**/dashboard');
-  }
+export async function startLoggedIn({ page, baseURL, projectRoot, env }) {
+  // Start app server, seed test database with user, etc.
+  // Then perform login to get browser into logged-in state
+  await page.goto(baseURL + '/login');
+  await page.fill('input[name="email"]', 'test@example.com');
+  await page.fill('input[name="password"]', 'password123');
+  await page.click('button[type="submit"]');
+  await page.waitForURL('**/dashboard');
 
   return {
     stop: async () => {
-      // Cleanup
+      // Cleanup: stop servers, clean database, etc.
     }
   };
 }
@@ -118,6 +120,49 @@ Navigate the browser to a URL.
   "wait": "networkidle"
 }
 ```
+
+### `devtools.page.interact`
+
+Execute a sequence of page interactions (click, fill, type, wait, etc.).
+
+**Parameters:**
+- `actions` (required): Array of action objects to execute sequentially
+
+**Supported Actions:**
+- `click`: Click an element
+- `fill`: Fill a form field
+- `type`: Type text with delays between keystrokes
+- `press`: Press a key
+- `select`: Select option(s) from dropdown
+- `wait`: Wait for a delay
+- `waitForSelector`: Wait for element to appear/disappear
+- `waitForNavigation`: Wait for navigation to complete
+
+**Example:**
+```json
+{
+  "actions": [
+    {
+      "type": "fill",
+      "selector": "input[name='search']",
+      "value": "playwright"
+    },
+    {
+      "type": "click",
+      "selector": "button[type='submit']"
+    },
+    {
+      "type": "waitForSelector",
+      "selector": ".search-results",
+      "options": { "state": "visible" }
+    }
+  ]
+}
+```
+
+**Response:**
+- Success: `{"ok": true}`
+- Failure: `{"ok": false, "failedAtIndex": 1, "error": "...", "action": {...}}`
 
 ### `devtools.getElement`
 
@@ -283,13 +328,13 @@ Hooks are optional JavaScript/TypeScript functions that customize behavior for d
 
 ### Hook Context
 
-All hooks receive a context object:
+All hooks receive a context object with the Playwright page and configuration:
 
 ```typescript
 {
-  page?: Page;              // Playwright page (if available)
-  baseURL?: string;         // Configured base URL
-  projectRoot: string;      // Directory containing config file
+  page: Page;                  // Playwright page instance
+  baseURL?: string;            // Configured base URL
+  projectRoot: string;         // Directory containing config file
   env: Record<string, string>; // Environment variables
 }
 ```
@@ -306,10 +351,51 @@ Hooks should return (or return a Promise of):
 
 ### Hook Execution
 
-1. If a scenario is specified in `session.start`, the corresponding hook is called **twice**:
-   - First without `page` (for app setup like starting servers)
-   - Then with `page` (for browser actions like login)
-2. The `stop()` function (if returned) is called when session stops
+1. When a scenario is specified in `session.start`, the corresponding hook function is called **once**
+2. The hook receives a fully initialized Playwright page
+3. The hook should:
+   - Set up project-specific infrastructure (start servers, seed databases, etc.)
+   - Navigate and interact with the page to reach the desired initial state
+   - Return a cleanup function if needed
+4. The `stop()` function (if returned) is called when the session stops
+
+### Typical Hook Patterns
+
+**Guest/Public Scenario:**
+```javascript
+export async function startGuest({ page, baseURL }) {
+  await page.goto(baseURL);
+  return {};
+}
+```
+
+**Authenticated Scenario:**
+```javascript
+export async function startLoggedIn({ page, baseURL }) {
+  // Reuse your e2e test setup code
+  await seedTestDatabase({ email: 'test@example.com' });
+  await page.goto(baseURL + '/login');
+  await page.fill('input[name="email"]', 'test@example.com');
+  await page.fill('input[name="password"]', 'password123');
+  await page.click('button[type="submit"]');
+  await page.waitForURL('**/dashboard');
+
+  return {
+    stop: async () => {
+      await cleanupTestDatabase();
+    }
+  };
+}
+```
+
+**Admin Scenario:**
+```javascript
+export async function startAdmin({ page, baseURL }) {
+  await seedAdminUser();
+  await loginAsAdmin(page, baseURL);
+  return { stop: cleanupAdmin };
+}
+```
 
 ## Limitations (v1)
 

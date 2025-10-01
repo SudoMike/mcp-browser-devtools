@@ -4,7 +4,11 @@
     "headless": true
   },
   "hooks": {
-    "modulePath": "./fixtures/test-hooks.ts"
+    "modulePath": "./fixtures/test-hooks.ts",
+    "scenarios": {
+      "default": { "use": "defaultScenario" },
+      "loggedIn": { "use": "testLogin" }
+    }
   },
   "policy": {
     "idleMs": 60000

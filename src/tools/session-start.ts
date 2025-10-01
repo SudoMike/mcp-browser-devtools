@@ -31,7 +31,11 @@ export async function sessionStart(
   sessionManager.markStartInProgress();
 
   try {
-    let hookStopFn: (() => void | Promise<void>) | undefined;
+    // Create Playwright session first
+    const session = await sessionManager.createPlaywrightSession(
+      loadedConfig.resolved,
+      undefined,
+    );
 
     // Execute scenario hook if configured
     if (params.scenario && loadedConfig.hooks) {
@@ -52,8 +56,9 @@ export async function sessionStart(
       // Load hooks module
       const hooksModule = await loadHooksModule(loadedConfig.hooks.modulePath);
 
-      // Execute hook without page first (for startup)
+      // Execute hook once with page available
       const hookContext = {
+        page: session.page,
         projectRoot: loadedConfig.configDir,
         env: process.env as Record<string, string>,
         baseURL: loadedConfig.resolved.playwright.baseURL,
@@ -64,50 +69,20 @@ export async function sessionStart(
         scenarioConfig.use,
         hookContext,
       );
-      hookStopFn = result.stop;
-    }
 
-    // Create Playwright session
-    const session = await sessionManager.createPlaywrightSession(
-      loadedConfig.resolved,
-      hookStopFn,
-    );
-
-    // If we have a hook and it needs the page, execute it again with page
-    if (params.scenario && loadedConfig.hooks) {
-      const scenarioConfig = loadedConfig.hooks.scenarios?.[params.scenario];
-      if (scenarioConfig) {
-        const hooksModule = await loadHooksModule(
-          loadedConfig.hooks.modulePath,
-        );
-
-        const hookContextWithPage = {
-          page: session.page,
-          projectRoot: loadedConfig.configDir,
-          env: process.env as Record<string, string>,
-          baseURL: loadedConfig.resolved.playwright.baseURL,
-        };
-
-        const result = await executeHook(
-          hooksModule,
-          scenarioConfig.use,
-          hookContextWithPage,
-        );
-
-        // Update stop function if hook returned a new one
-        if (result.stop) {
-          session.hookStopFn = result.stop;
-        }
+      // Store stop function if hook returned one
+      if (result.stop) {
+        session.hookStopFn = result.stop;
       }
     }
 
-    // Set session as active
+    // Set session as active (this also clears startInProgress flag)
     sessionManager.setSession(session);
 
     return { ok: true };
   } catch (err) {
-    // Reset start in progress flag
-    sessionManager.markStartInProgress();
+    // Clear start in progress flag on error
+    sessionManager.clearStartInProgress();
 
     if (isDevToolsError(err)) {
       throw err;

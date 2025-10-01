@@ -128,6 +128,82 @@ export interface GetCssProvenanceParams {
   maxResults?: number;
 }
 
+export interface PageInteractParams {
+  actions: PageAction[];
+}
+
+export type PageAction =
+  | ClickAction
+  | FillAction
+  | TypeAction
+  | PressAction
+  | SelectAction
+  | WaitAction
+  | WaitForSelectorAction
+  | WaitForNavigationAction;
+
+export interface ClickAction {
+  type: "click";
+  selector: string;
+  options?: {
+    button?: "left" | "right" | "middle";
+    clickCount?: number;
+    delay?: number;
+  };
+}
+
+export interface FillAction {
+  type: "fill";
+  selector: string;
+  value: string;
+}
+
+export interface TypeAction {
+  type: "type";
+  selector: string;
+  text: string;
+  options?: {
+    delay?: number;
+  };
+}
+
+export interface PressAction {
+  type: "press";
+  selector: string;
+  key: string;
+  options?: {
+    delay?: number;
+  };
+}
+
+export interface SelectAction {
+  type: "select";
+  selector: string;
+  values: string | string[];
+}
+
+export interface WaitAction {
+  type: "wait";
+  delay: number;
+}
+
+export interface WaitForSelectorAction {
+  type: "waitForSelector";
+  selector: string;
+  options?: {
+    state?: "attached" | "detached" | "visible" | "hidden";
+    timeout?: number;
+  };
+}
+
+export interface WaitForNavigationAction {
+  type: "waitForNavigation";
+  options?: {
+    waitUntil?: "load" | "domcontentloaded" | "networkidle";
+    timeout?: number;
+  };
+}
+
 // ============================================================================
 // Tool Result Types
 // ============================================================================
@@ -179,6 +255,13 @@ export interface Quad {
 export interface GetCssProvenanceResult {
   matchCount: number;
   results: CssProvenanceInfo[];
+}
+
+export interface PageInteractResult {
+  ok: boolean;
+  failedAtIndex?: number;
+  error?: string;
+  action?: PageAction;
 }
 
 export interface CssProvenanceInfo {

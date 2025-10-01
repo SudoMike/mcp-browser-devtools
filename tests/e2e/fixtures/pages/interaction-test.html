@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interaction Test Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, select, button {
+      padding: 8px;
+      font-size: 14px;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      min-height: 50px;
+      display: none;
+    }
+    #result.visible {
+      display: block;
+    }
+    #delayed-element {
+      display: none;
+      padding: 10px;
+      background-color: lightgreen;
+      margin-top: 10px;
+    }
+    #delayed-element.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Interaction Test Page</h1>
+
+  <form id="test-form">
+    <div class="form-group">
+      <label for="text-input">Text Input:</label>
+      <input type="text" id="text-input" name="text-input" />
+    </div>
+
+    <div class="form-group">
+      <label for="email-input">Email Input:</label>
+      <input type="email" id="email-input" name="email-input" />
+    </div>
+
+    <div class="form-group">
+      <label for="select-input">Select:</label>
+      <select id="select-input" name="select-input">
+        <option value="">-- Choose --</option>
+        <option value="option1">Option 1</option>
+        <option value="option2">Option 2</option>
+        <option value="option3">Option 3</option>
+      </select>
+    </div>
+
+    <button type="button" id="submit-button">Submit</button>
+    <button type="button" id="show-delayed">Show Delayed Element</button>
+  </form>
+
+  <div id="result"></div>
+  <div id="delayed-element">This element appeared after a delay!</div>
+
+  <script>
+    document.getElementById('submit-button').addEventListener('click', () => {
+      const textValue = document.getElementById('text-input').value;
+      const emailValue = document.getElementById('email-input').value;
+      const selectValue = document.getElementById('select-input').value;
+
+      const result = document.getElementById('result');
+      result.textContent = `Text: ${textValue}, Email: ${emailValue}, Select: ${selectValue}`;
+      result.className = 'visible';
+    });
+
+    document.getElementById('show-delayed').addEventListener('click', () => {
+      setTimeout(() => {
+        document.getElementById('delayed-element').className = 'visible';
+      }, 500);
+    });
+  </script>
+</body>
+</html>

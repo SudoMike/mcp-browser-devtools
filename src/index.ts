@@ -15,6 +15,7 @@ import type {
   NavigateParams,
   GetElementParams,
   GetCssProvenanceParams,
+  PageInteractParams,
 } from "./types.js";
 
 import { sessionStart } from "./tools/session-start.js";
@@ -22,6 +23,7 @@ import { sessionStop } from "./tools/session-stop.js";
 import { navigate } from "./tools/navigate.js";
 import { getElement } from "./tools/get-element.js";
 import { getCssProvenance } from "./tools/get-css-provenance.js";
+import { pageInteract } from "./tools/page-interact.js";
 
 // Parse CLI args
 const args = process.argv.slice(2);
@@ -221,6 +223,139 @@ const tools: Tool[] = [
       required: ["target", "property"],
     },
   },
+  {
+    name: "devtools.page.interact",
+    description:
+      "Execute a sequence of page interactions (click, fill, type, wait, etc.). " +
+      "Actions are executed sequentially. " +
+      "Returns success or the index of the failed action with error details.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        actions: {
+          type: "array",
+          description: "Array of actions to execute sequentially",
+          items: {
+            oneOf: [
+              {
+                type: "object",
+                properties: {
+                  type: { type: "string", enum: ["click"] },
+                  selector: { type: "string" },
+                  options: {
+                    type: "object",
+                    properties: {
+                      button: { type: "string", enum: ["left", "right", "middle"] },
+                      clickCount: { type: "number" },
+                      delay: { type: "number" },
+                    },
+                  },
+                },
+                required: ["type", "selector"],
+              },
+              {
+                type: "object",
+                properties: {
+                  type: { type: "string", enum: ["fill"] },
+                  selector: { type: "string" },
+                  value: { type: "string" },
+                },
+                required: ["type", "selector", "value"],
+              },
+              {
+                type: "object",
+                properties: {
+                  type: { type: "string", enum: ["type"] },
+                  selector: { type: "string" },
+                  text: { type: "string" },
+                  options: {
+                    type: "object",
+                    properties: {
+                      delay: { type: "number" },
+                    },
+                  },
+                },
+                required: ["type", "selector", "text"],
+              },
+              {
+                type: "object",
+                properties: {
+                  type: { type: "string", enum: ["press"] },
+                  selector: { type: "string" },
+                  key: { type: "string" },
+                  options: {
+                    type: "object",
+                    properties: {
+                      delay: { type: "number" },
+                    },
+                  },
+                },
+                required: ["type", "selector", "key"],
+              },
+              {
+                type: "object",
+                properties: {
+                  type: { type: "string", enum: ["select"] },
+                  selector: { type: "string" },
+                  values: {
+                    oneOf: [
+                      { type: "string" },
+                      { type: "array", items: { type: "string" } },
+                    ],
+                  },
+                },
+                required: ["type", "selector", "values"],
+              },
+              {
+                type: "object",
+                properties: {
+                  type: { type: "string", enum: ["wait"] },
+                  delay: { type: "number" },
+                },
+                required: ["type", "delay"],
+              },
+              {
+                type: "object",
+                properties: {
+                  type: { type: "string", enum: ["waitForSelector"] },
+                  selector: { type: "string" },
+                  options: {
+                    type: "object",
+                    properties: {
+                      state: {
+                        type: "string",
+                        enum: ["attached", "detached", "visible", "hidden"],
+                      },
+                      timeout: { type: "number" },
+                    },
+                  },
+                },
+                required: ["type", "selector"],
+              },
+              {
+                type: "object",
+                properties: {
+                  type: { type: "string", enum: ["waitForNavigation"] },
+                  options: {
+                    type: "object",
+                    properties: {
+                      waitUntil: {
+                        type: "string",
+                        enum: ["load", "domcontentloaded", "networkidle"],
+                      },
+                      timeout: { type: "number" },
+                    },
+                  },
+                },
+                required: ["type"],
+              },
+            ],
+          },
+        },
+      },
+      required: ["actions"],
+    },
+  },
 ];
 
 // Handle list tools
@@ -268,6 +403,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "devtools.getCssProvenance": {
         const result = await getCssProvenance(
           args as unknown as GetCssProvenanceParams,
+        );
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case "devtools.page.interact": {
+        const result = await pageInteract(
+          args as unknown as PageInteractParams,
         );
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],

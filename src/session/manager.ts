@@ -46,6 +46,13 @@ class SessionManager {
   }
 
   /**
+   * Clear the start in progress flag
+   */
+  clearStartInProgress(): void {
+    this.startInProgress = false;
+  }
+
+  /**
    * Set the active session
    */
   setSession(session: SessionState): void {
