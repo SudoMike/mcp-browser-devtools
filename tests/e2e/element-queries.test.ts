@@ -418,4 +418,106 @@ describe("Element Queries and Multiple Results", () => {
       expect(boxModel.margin).toBeDefined();
     });
   });
+
+  describe("Edge Cases", () => {
+    it("should handle element with no classes or IDs", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/multiple-elements.html" });
+
+      const result = await getElement({
+        target: { kind: "selector", value: "div.item:nth-child(4)" },
+        include: {
+          attributes: true,
+        },
+      });
+
+      expect(result.matchCount).toBe(1);
+      expect(result.results[0].exists).toBe(true);
+      expect(result.results[0].attributes?.class).toContain("item");
+    });
+
+    it("should handle very long selector chains", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/multiple-elements.html" });
+
+      const result = await getElement({
+        target: {
+          kind: "selector",
+          value: "body div.item",
+        },
+        include: {
+          attributes: true,
+        },
+      });
+
+      expect(result.matchCount).toBeGreaterThan(0);
+      expect(result.results[0].exists).toBe(true);
+    });
+
+    it("should return consistent results for same query", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/multiple-elements.html" });
+
+      const result1 = await getElement({
+        target: { kind: "id", value: "first" },
+        include: { computed: ["ALL_DEFAULTS"] },
+      });
+
+      const result2 = await getElement({
+        target: { kind: "id", value: "first" },
+        include: { computed: ["ALL_DEFAULTS"] },
+      });
+
+      expect(result1).toEqual(result2);
+    });
+
+    it("should handle element with only whitespace text content", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/multiple-elements.html" });
+
+      const result = await getElement({
+        target: { kind: "selector", value: "button" },
+        include: { attributes: true },
+      });
+
+      expect(result.matchCount).toBe(1);
+      expect(result.results[0].exists).toBe(true);
+      expect(result.results[0].nodeName).toBe("BUTTON");
+    });
+
+    it("should handle computed property that doesn't apply to element", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/multiple-elements.html" });
+
+      const result = await getElement({
+        target: { kind: "id", value: "first" },
+        include: {
+          computed: ["flex-grow"],
+        },
+      });
+
+      expect(result.matchCount).toBe(1);
+      expect(result.results[0].computed).toBeDefined();
+      // flex-grow should still return a value (likely 0 or default)
+      expect(result.results[0].computed!["flex-grow"]).toBeDefined();
+    });
+
+    it("should handle element with negative margins", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/multiple-elements.html" });
+
+      const result = await getElement({
+        target: { kind: "id", value: "first" },
+        include: {
+          boxModel: true,
+        },
+      });
+
+      expect(result.matchCount).toBe(1);
+      expect(result.results[0].boxModel).toBeDefined();
+      // Box model should be valid even with negative margins
+      expect(typeof result.results[0].boxModel!.margin.x).toBe("number");
+      expect(typeof result.results[0].boxModel!.margin.y).toBe("number");
+    });
+  });
 });

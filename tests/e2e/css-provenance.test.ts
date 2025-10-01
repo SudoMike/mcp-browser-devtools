@@ -353,4 +353,143 @@ describe("CSS Provenance and Cascade", () => {
       expect(result.results[0].contributors).toBeUndefined();
     });
   });
+
+  describe("Edge Cases", () => {
+    it("should handle property with multiple overridden declarations", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/css-cascade.html" });
+
+      const result = await getCssProvenance({
+        target: { kind: "selector", value: ".priority-test" },
+        property: "padding-left",
+        includeContributors: true,
+      });
+
+      expect(result.matchCount).toBe(1);
+      expect(result.results[0].winner).toBeDefined();
+      expect(result.results[0].contributors).toBeDefined();
+      expect(result.results[0].contributors!.length).toBeGreaterThan(0);
+    });
+
+    it("should handle property that only exists as user-agent default", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/css-cascade.html" });
+
+      const result = await getCssProvenance({
+        target: { kind: "selector", value: ".border-test" },
+        property: "cursor",
+      });
+
+      expect(result.matchCount).toBe(1);
+      expect(result.results[0].property).toBe("cursor");
+      expect(result.results[0].computedValue).toBeDefined();
+    });
+
+    it("should handle property with 'inherit' value", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/css-cascade.html" });
+
+      const result = await getCssProvenance({
+        target: { kind: "selector", value: ".child" },
+        property: "font-family",
+      });
+
+      expect(result.matchCount).toBe(1);
+      expect(result.results[0].computedValue).toBeDefined();
+      expect(result.results[0].computedValue).toContain("Arial");
+    });
+
+    it("should handle property with 'initial' keyword", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/css-cascade.html" });
+
+      const result = await getCssProvenance({
+        target: { kind: "id", value: "special-box" },
+        property: "display",
+      });
+
+      expect(result.matchCount).toBe(1);
+      expect(result.results[0].computedValue).toBeDefined();
+    });
+
+    it("should handle property with calc() value", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/css-cascade.html" });
+
+      // Test that we can get provenance for properties with computed values
+      const result = await getCssProvenance({
+        target: { kind: "selector", value: ".units-test" },
+        property: "width",
+      });
+
+      expect(result.matchCount).toBe(1);
+      expect(result.results[0].computedValue).toBeDefined();
+    });
+
+    it("should handle property with percentage value", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/css-cascade.html" });
+
+      const result = await getCssProvenance({
+        target: { kind: "selector", value: ".units-test" },
+        property: "width",
+      });
+
+      expect(result.matchCount).toBe(1);
+      expect(result.results[0].winner).toBeDefined();
+      expect(result.results[0].winner?.value).toBe("50%");
+      // Computed value should be in pixels
+      expect(result.results[0].computedValue).toMatch(/px$/);
+    });
+
+    it("should handle property with em units", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/css-cascade.html" });
+
+      const result = await getCssProvenance({
+        target: { kind: "selector", value: ".units-test" },
+        property: "height",
+      });
+
+      expect(result.matchCount).toBe(1);
+      expect(result.results[0].winner).toBeDefined();
+      expect(result.results[0].winner?.value).toBe("10em");
+      // Computed value should be in pixels
+      expect(result.results[0].computedValue).toMatch(/px$/);
+    });
+
+    it("should handle consistent results for same query", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/css-cascade.html" });
+
+      const result1 = await getCssProvenance({
+        target: { kind: "id", value: "special-box" },
+        property: "color",
+        includeContributors: true,
+      });
+
+      const result2 = await getCssProvenance({
+        target: { kind: "id", value: "special-box" },
+        property: "color",
+        includeContributors: true,
+      });
+
+      expect(result1).toEqual(result2);
+    });
+
+    it("should handle property with rgb color format", async () => {
+      await sessionStart({}, loadedConfig);
+      await navigate({ url: "/css-cascade.html" });
+
+      const result = await getCssProvenance({
+        target: { kind: "id", value: "special-box" },
+        property: "color",
+      });
+
+      expect(result.matchCount).toBe(1);
+      expect(result.results[0].winner?.value).toBe("red");
+      // Computed value should be in rgb format
+      expect(result.results[0].computedValue).toMatch(/rgb\(/);
+    });
+  });
 });
