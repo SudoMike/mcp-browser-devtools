@@ -10,12 +10,12 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "tsc && vitest run",
+    "test:watch": "tsc && vitest",
     "lint": "eslint src",
     "format": "biome format --write .",
     "format:check": "biome format .",
-    "check": "npm run lint && npm run format:check"
+    "check": "tsc && npm run lint && npm run format:check"
   },
   "keywords": [
     "mcp",
