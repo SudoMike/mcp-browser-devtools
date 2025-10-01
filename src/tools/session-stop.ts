@@ -1,5 +1,5 @@
-import type { SessionStopResult } from '../types.js';
-import { sessionManager } from '../session/manager.js';
+import type { SessionStopResult } from "../types.js";
+import { sessionManager } from "../session/manager.js";
 
 /**
  * Stop the current session

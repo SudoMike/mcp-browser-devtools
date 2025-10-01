@@ -1,29 +1,29 @@
 #!/usr/bin/env node
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   Tool,
-} from '@modelcontextprotocol/sdk/types.js';
+} from "@modelcontextprotocol/sdk/types.js";
 
-import { loadConfig, type LoadedConfig } from './config.js';
-import { sessionManager } from './session/manager.js';
-import { isDevToolsError } from './errors.js';
+import { loadConfig, type LoadedConfig } from "./config.js";
+import { sessionManager } from "./session/manager.js";
+import { isDevToolsError } from "./errors.js";
 
-import { sessionStart } from './tools/session-start.js';
-import { sessionStop } from './tools/session-stop.js';
-import { navigate } from './tools/navigate.js';
-import { getElement } from './tools/get-element.js';
-import { getCssProvenance } from './tools/get-css-provenance.js';
+import { sessionStart } from "./tools/session-start.js";
+import { sessionStop } from "./tools/session-stop.js";
+import { navigate } from "./tools/navigate.js";
+import { getElement } from "./tools/get-element.js";
+import { getCssProvenance } from "./tools/get-css-provenance.js";
 
 // Parse CLI args
 const args = process.argv.slice(2);
-const configPathIndex = args.indexOf('--config');
+const configPathIndex = args.indexOf("--config");
 
 if (configPathIndex === -1 || !args[configPathIndex + 1]) {
-  console.error('Usage: mcp-devtools --config <path-to-config.json>');
+  console.error("Usage: mcp-devtools --config <path-to-config.json>");
   process.exit(1);
 }
 
@@ -41,130 +41,139 @@ try {
 // Create MCP server
 const server = new Server(
   {
-    name: 'mcp-devtools',
-    version: '1.0.0',
+    name: "mcp-devtools",
+    version: "1.0.0",
   },
   {
     capabilities: {
       tools: {},
     },
-  }
+  },
 );
 
 // Define tools
 const tools: Tool[] = [
   {
-    name: 'devtools.session.start',
-    description: 'Start a new Playwright browser session. Optionally specify a scenario to run hooks (e.g., logged-in vs guest mode). Only one session can be active at a time.',
+    name: "devtools.session.start",
+    description:
+      "Start a new Playwright browser session. Optionally specify a scenario to run hooks (e.g., logged-in vs guest mode). Only one session can be active at a time.",
     inputSchema: {
-      type: 'object',
+      type: "object",
       properties: {
         scenario: {
-          type: 'string',
-          description: 'Optional scenario name to run specific hooks (must be defined in config)',
+          type: "string",
+          description:
+            "Optional scenario name to run specific hooks (must be defined in config)",
         },
       },
     },
   },
   {
-    name: 'devtools.session.stop',
-    description: 'Stop the current browser session and clean up all resources.',
+    name: "devtools.session.stop",
+    description: "Stop the current browser session and clean up all resources.",
     inputSchema: {
-      type: 'object',
+      type: "object",
       properties: {},
     },
   },
   {
-    name: 'devtools.session.navigate',
-    description: 'Navigate the browser to a URL. The URL can be absolute or relative to baseURL.',
+    name: "devtools.session.navigate",
+    description:
+      "Navigate the browser to a URL. The URL can be absolute or relative to baseURL.",
     inputSchema: {
-      type: 'object',
+      type: "object",
       properties: {
         url: {
-          type: 'string',
-          description: 'URL to navigate to (absolute or relative to baseURL)',
+          type: "string",
+          description: "URL to navigate to (absolute or relative to baseURL)",
         },
         wait: {
-          type: 'string',
-          enum: ['load', 'domcontentloaded', 'networkidle'],
-          description: 'Wait strategy (default: networkidle)',
+          type: "string",
+          enum: ["load", "domcontentloaded", "networkidle"],
+          description: "Wait strategy (default: networkidle)",
         },
       },
-      required: ['url'],
+      required: ["url"],
     },
   },
   {
-    name: 'devtools.getElement',
-    description: 'Get detailed information about elements matching a selector or ID. Returns box model, computed styles, attributes, and role. Returns first match by default; use maxResults for multiple matches.',
+    name: "devtools.getElement",
+    description:
+      "Get detailed information about elements matching a selector or ID. Returns box model, computed styles, attributes, and role. Returns first match by default; use maxResults for multiple matches.",
     inputSchema: {
-      type: 'object',
+      type: "object",
       properties: {
         target: {
-          type: 'object',
+          type: "object",
           properties: {
             kind: {
-              type: 'string',
-              enum: ['id', 'selector'],
-              description: 'Type of selector',
+              type: "string",
+              enum: ["id", "selector"],
+              description: "Type of selector",
             },
             value: {
-              type: 'string',
-              description: 'ID value or CSS selector',
+              type: "string",
+              description: "ID value or CSS selector",
             },
           },
-          required: ['kind', 'value'],
+          required: ["kind", "value"],
         },
         include: {
-          type: 'array',
+          type: "array",
           items: {
-            type: 'string',
-            enum: ['boxModel', 'computed', 'attributes', 'role'],
+            type: "string",
+            enum: ["boxModel", "computed", "attributes", "role"],
           },
-          description: 'What information to include (default: all)',
+          description: "What information to include (default: all)",
         },
         maxResults: {
-          type: 'number',
-          description: 'Maximum number of matching elements to return (default: 10, max: 50)',
+          type: "number",
+          description:
+            "Maximum number of matching elements to return (default: 10, max: 50)",
         },
       },
-      required: ['target'],
+      required: ["target"],
     },
   },
   {
-    name: 'devtools.getCssProvenance',
-    description: 'Get the source of a CSS property value, including which rule/file/line set it. IMPORTANT: You MUST use longhand CSS properties (e.g., "border-top-width", not "border"). Returns computed value and winning declaration with source location.',
+    name: "devtools.getCssProvenance",
+    description:
+      'Get the source of a CSS property value, including which rule/file/line set it. IMPORTANT: You MUST use longhand CSS properties (e.g., "border-top-width", not "border"). Returns computed value and winning declaration with source location.',
     inputSchema: {
-      type: 'object',
+      type: "object",
       properties: {
         target: {
-          type: 'object',
+          type: "object",
           properties: {
             kind: {
-              type: 'string',
-              enum: ['id', 'selector'],
-              description: 'Type of selector',
+              type: "string",
+              enum: ["id", "selector"],
+              description: "Type of selector",
             },
             value: {
-              type: 'string',
-              description: 'ID value or CSS selector',
+              type: "string",
+              description: "ID value or CSS selector",
             },
           },
-          required: ['kind', 'value'],
+          required: ["kind", "value"],
         },
         property: {
-          type: 'string',
-          description: 'CSS property name (MUST be longhand, e.g., "border-top-width" not "border")',
+          type: "string",
+          description:
+            'CSS property name (MUST be longhand, e.g., "border-top-width" not "border")',
         },
         includeContributors: {
-          type: 'boolean',
-          description: 'Include non-winning declarations in cascade (default: false)',
+          type: "boolean",
+          description:
+            "Include non-winning declarations in cascade (default: false)",
         },
         maxResults: {
-          type: 'number',
-          description: 'Maximum number of matching elements to analyze (default: 10, max: 50)',
+          type: "number",
+          description:
+            "Maximum number of matching elements to analyze (default: 10, max: 50)",
         },
       },
-      required: ['target', 'property'],
+      required: ["target", "property"],
     },
   },
 ];
@@ -180,38 +189,41 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
 
     switch (name) {
-      case 'devtools.session.start': {
-        const result = await sessionStart(args as any, loadedConfig);
+      case "devtools.session.start": {
+        const result = await sessionStart(
+          args as Record<string, unknown>,
+          loadedConfig,
+        );
         return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
 
-      case 'devtools.session.stop': {
+      case "devtools.session.stop": {
         const result = await sessionStop();
         return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
 
-      case 'devtools.session.navigate': {
-        const result = await navigate(args as any);
+      case "devtools.session.navigate": {
+        const result = await navigate(args as Record<string, unknown>);
         return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
 
-      case 'devtools.getElement': {
-        const result = await getElement(args as any);
+      case "devtools.getElement": {
+        const result = await getElement(args as Record<string, unknown>);
         return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
 
-      case 'devtools.getCssProvenance': {
-        const result = await getCssProvenance(args as any);
+      case "devtools.getCssProvenance": {
+        const result = await getCssProvenance(args as Record<string, unknown>);
         return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
 
@@ -221,7 +233,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   } catch (err) {
     if (isDevToolsError(err)) {
       return {
-        content: [{ type: 'text', text: JSON.stringify(err, null, 2) }],
+        content: [{ type: "text", text: JSON.stringify(err, null, 2) }],
         isError: true,
       };
     }
@@ -229,16 +241,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     return {
       content: [
         {
-          type: 'text',
+          type: "text",
           text: JSON.stringify(
             {
               error: {
-                code: 'UNEXPECTED_ERROR',
+                code: "UNEXPECTED_ERROR",
                 message: String(err),
               },
             },
             null,
-            2
+            2,
           ),
         },
       ],
@@ -253,11 +265,11 @@ async function shutdown() {
   process.exit(0);
 }
 
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
 
 // Start server
 const transport = new StdioServerTransport();
 await server.connect(transport);
 
-console.error('MCP DevTools server running');
+console.error("MCP DevTools server running");

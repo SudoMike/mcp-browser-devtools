@@ -1,4 +1,4 @@
-import type { Browser, BrowserContext, Page, CDPSession } from 'playwright';
+import type { Browser, BrowserContext, Page, CDPSession } from "playwright";
 
 // ============================================================================
 // Configuration Types
@@ -46,7 +46,9 @@ export interface HooksModule {
   [key: string]: HookFunction;
 }
 
-export type HookFunction = (context: HookContext) => HookResult | Promise<HookResult>;
+export type HookFunction = (
+  context: HookContext,
+) => HookResult | Promise<HookResult>;
 
 export interface HookContext {
   page?: Page;
@@ -100,17 +102,17 @@ export interface SessionStartParams {
 
 export interface NavigateParams {
   url: string;
-  wait?: 'load' | 'domcontentloaded' | 'networkidle';
+  wait?: "load" | "domcontentloaded" | "networkidle";
 }
 
 export interface ElementTarget {
-  kind: 'id' | 'selector';
+  kind: "id" | "selector";
   value: string;
 }
 
 export interface GetElementParams {
   target: ElementTarget;
-  include?: Array<'boxModel' | 'computed' | 'attributes' | 'role'>;
+  include?: Array<"boxModel" | "computed" | "attributes" | "role">;
   maxResults?: number;
 }
 
@@ -182,7 +184,7 @@ export interface CssProvenanceInfo {
 }
 
 export interface CssDeclarationSource {
-  source: 'inline' | 'stylesheet' | 'attribute';
+  source: "inline" | "stylesheet" | "attribute";
   selector?: string;
   stylesheetUrl?: string;
   line?: number;
@@ -222,7 +224,7 @@ export interface CDPMatchedRule {
 export interface CDPRule {
   selectorList: CDPSelectorList;
   style: CDPStyle;
-  origin: 'user-agent' | 'user' | 'inspector' | 'regular';
+  origin: "user-agent" | "user" | "inspector" | "regular";
   styleSheetId?: string;
 }
 

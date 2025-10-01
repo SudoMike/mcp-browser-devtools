@@ -1,21 +1,21 @@
-import type { SessionStartParams, SessionStartResult } from '../types.js';
-import type { LoadedConfig } from '../config.js';
-import { ErrorCode, createError, isDevToolsError } from '../errors.js';
-import { sessionManager } from '../session/manager.js';
-import { loadHooksModule, executeHook } from '../session/hooks.js';
+import type { SessionStartParams, SessionStartResult } from "../types.js";
+import type { LoadedConfig } from "../config.js";
+import { ErrorCode, createError, isDevToolsError } from "../errors.js";
+import { sessionManager } from "../session/manager.js";
+import { loadHooksModule, executeHook } from "../session/hooks.js";
 
 /**
  * Start a new Playwright session
  */
 export async function sessionStart(
   params: SessionStartParams,
-  loadedConfig: LoadedConfig
+  loadedConfig: LoadedConfig,
 ): Promise<SessionStartResult> {
   // Check if session already exists
   if (sessionManager.hasSession()) {
     throw createError(
       ErrorCode.ALREADY_STARTED,
-      'Session is already active. Call devtools.session.stop first.'
+      "Session is already active. Call devtools.session.stop first.",
     );
   }
 
@@ -23,7 +23,7 @@ export async function sessionStart(
   if (sessionManager.isStarting()) {
     throw createError(
       ErrorCode.SESSION_START_IN_PROGRESS,
-      'Session start is already in progress'
+      "Session start is already in progress",
     );
   }
 
@@ -44,8 +44,8 @@ export async function sessionStart(
           {
             availableScenarios: loadedConfig.hooks.scenarios
               ? Object.keys(loadedConfig.hooks.scenarios)
-              : []
-          }
+              : [],
+          },
         );
       }
 
@@ -59,21 +59,27 @@ export async function sessionStart(
         baseURL: loadedConfig.resolved.playwright.baseURL,
       };
 
-      const result = await executeHook(hooksModule, scenarioConfig.use, hookContext);
+      const result = await executeHook(
+        hooksModule,
+        scenarioConfig.use,
+        hookContext,
+      );
       hookStopFn = result.stop;
     }
 
     // Create Playwright session
     const session = await sessionManager.createPlaywrightSession(
       loadedConfig.resolved,
-      hookStopFn
+      hookStopFn,
     );
 
     // If we have a hook and it needs the page, execute it again with page
     if (params.scenario && loadedConfig.hooks) {
       const scenarioConfig = loadedConfig.hooks.scenarios?.[params.scenario];
       if (scenarioConfig) {
-        const hooksModule = await loadHooksModule(loadedConfig.hooks.modulePath);
+        const hooksModule = await loadHooksModule(
+          loadedConfig.hooks.modulePath,
+        );
 
         const hookContextWithPage = {
           page: session.page,
@@ -82,7 +88,11 @@ export async function sessionStart(
           baseURL: loadedConfig.resolved.playwright.baseURL,
         };
 
-        const result = await executeHook(hooksModule, scenarioConfig.use, hookContextWithPage);
+        const result = await executeHook(
+          hooksModule,
+          scenarioConfig.use,
+          hookContextWithPage,
+        );
 
         // Update stop function if hook returned a new one
         if (result.stop) {
@@ -105,8 +115,8 @@ export async function sessionStart(
 
     throw createError(
       ErrorCode.UNEXPECTED_ERROR,
-      'Unexpected error during session start',
-      { originalError: String(err) }
+      "Unexpected error during session start",
+      { originalError: String(err) },
     );
   }
 }

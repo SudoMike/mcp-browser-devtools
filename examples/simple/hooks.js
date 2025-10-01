@@ -10,16 +10,16 @@
  * Default scenario - just starts without any special setup
  */
 export async function startDefault({ projectRoot, env, baseURL }) {
-  console.error('[hooks] Starting in default mode');
+  console.error("[hooks] Starting in default mode");
 
   // You could start your app server here
   // const server = await startMyAppServer();
 
   return {
     stop: async () => {
-      console.error('[hooks] Stopping default mode');
+      console.error("[hooks] Stopping default mode");
       // await server.stop();
-    }
+    },
   };
 }
 
@@ -27,27 +27,29 @@ export async function startDefault({ projectRoot, env, baseURL }) {
  * Logged-in scenario - performs login after browser is ready
  */
 export async function startLoggedIn({ page, projectRoot, env, baseURL }) {
-  console.error('[hooks] Starting in logged-in mode');
+  console.error("[hooks] Starting in logged-in mode");
 
   // If page is provided, we can perform login
   if (page && baseURL) {
-    console.error('[hooks] Performing login...');
+    console.error("[hooks] Performing login...");
 
     // Example login flow (customize for your app)
-    await page.goto(baseURL + '/login');
-    await page.fill('input[name="username"]', 'testuser@example.com');
-    await page.fill('input[name="password"]', 'testpassword');
+    await page.goto(baseURL + "/login");
+    await page.fill('input[name="username"]', "testuser@example.com");
+    await page.fill('input[name="password"]', "testpassword");
     await page.click('button[type="submit"]');
-    await page.waitForURL('**/dashboard', { timeout: 5000 }).catch(() => {
-      console.error('[hooks] Login may have failed or taken longer than expected');
+    await page.waitForURL("**/dashboard", { timeout: 5000 }).catch(() => {
+      console.error(
+        "[hooks] Login may have failed or taken longer than expected",
+      );
     });
 
-    console.error('[hooks] Login complete');
+    console.error("[hooks] Login complete");
   }
 
   return {
     stop: async () => {
-      console.error('[hooks] Stopping logged-in mode');
-    }
+      console.error("[hooks] Stopping logged-in mode");
+    },
   };
 }

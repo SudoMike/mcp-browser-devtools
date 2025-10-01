@@ -1,12 +1,12 @@
-import type { CDPSession } from 'playwright';
-import type { ElementTarget } from '../types.js';
-import { ErrorCode, createError } from '../errors.js';
+import type { CDPSession } from "playwright";
+import type { ElementTarget } from "../types.js";
+import { ErrorCode, createError } from "../errors.js";
 
 /**
  * Simple CSS escape function for IDs
  */
 function escapeCSS(str: string): string {
-  return str.replace(/([^\w-])/g, '\\$1');
+  return str.replace(/([^\w-])/g, "\\$1");
 }
 
 /**
@@ -16,16 +16,16 @@ function escapeCSS(str: string): string {
 export async function resolveElementTargets(
   cdpSession: CDPSession,
   target: ElementTarget,
-  maxResults: number = 10
+  maxResults: number = 10,
 ): Promise<number[]> {
   try {
     // Get document root
-    const { root } = await cdpSession.send('DOM.getDocument', { depth: 0 });
+    const { root } = await cdpSession.send("DOM.getDocument", { depth: 0 });
 
-    if (target.kind === 'id') {
+    if (target.kind === "id") {
       // Query by ID using CSS selector
       const selector = `#${escapeCSS(target.value)}`;
-      const { nodeIds } = await cdpSession.send('DOM.querySelectorAll', {
+      const { nodeIds } = await cdpSession.send("DOM.querySelectorAll", {
         nodeId: root.nodeId,
         selector,
       });
@@ -33,7 +33,7 @@ export async function resolveElementTargets(
       return nodeIds.slice(0, maxResults);
     } else {
       // Query by CSS selector
-      const { nodeIds } = await cdpSession.send('DOM.querySelectorAll', {
+      const { nodeIds } = await cdpSession.send("DOM.querySelectorAll", {
         nodeId: root.nodeId,
         selector: target.value,
       });
@@ -44,7 +44,7 @@ export async function resolveElementTargets(
     throw createError(
       ErrorCode.UNEXPECTED_ERROR,
       `Failed to resolve element target: ${err}`,
-      { target, originalError: String(err) }
+      { target, originalError: String(err) },
     );
   }
 }
@@ -54,10 +54,12 @@ export async function resolveElementTargets(
  */
 export async function getElementAttributes(
   cdpSession: CDPSession,
-  nodeId: number
+  nodeId: number,
 ): Promise<Record<string, string>> {
   try {
-    const { attributes } = await cdpSession.send('DOM.getAttributes', { nodeId });
+    const { attributes } = await cdpSession.send("DOM.getAttributes", {
+      nodeId,
+    });
 
     // CDP returns attributes as flat array: [name1, value1, name2, value2, ...]
     const result: Record<string, string> = {};
@@ -66,7 +68,7 @@ export async function getElementAttributes(
     }
 
     return result;
-  } catch (err) {
+  } catch {
     return {};
   }
 }
@@ -76,10 +78,10 @@ export async function getElementAttributes(
  */
 export async function getElementBoxModel(
   cdpSession: CDPSession,
-  nodeId: number
-): Promise<any> {
+  nodeId: number,
+): Promise<unknown> {
   try {
-    const { model } = await cdpSession.send('DOM.getBoxModel', { nodeId });
+    const { model } = await cdpSession.send("DOM.getBoxModel", { nodeId });
 
     // Convert flat quad arrays to structured objects
     const toQuad = (arr: number[]) => ({
@@ -99,7 +101,7 @@ export async function getElementBoxModel(
       border: toQuad(model.border),
       margin: toQuad(model.margin),
     };
-  } catch (err) {
+  } catch {
     // Element may not have a box model (display: none, detached, etc.)
     return null;
   }
@@ -110,10 +112,10 @@ export async function getElementBoxModel(
  */
 export async function getNodeName(
   cdpSession: CDPSession,
-  nodeId: number
+  nodeId: number,
 ): Promise<string | undefined> {
   try {
-    const { node } = await cdpSession.send('DOM.describeNode', { nodeId });
+    const { node } = await cdpSession.send("DOM.describeNode", { nodeId });
     return node.nodeName;
   } catch {
     return undefined;

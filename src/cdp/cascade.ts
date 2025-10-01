@@ -1,28 +1,81 @@
-import type { CDPSession } from 'playwright';
-import type { CssDeclarationSource, CDPProperty, CDPMatchedRule } from '../types.js';
-import { getMatchedStyles, getStyleSheetText, extractSnippet } from './css.js';
+import type { CDPSession } from "playwright";
+import type {
+  CssDeclarationSource,
+  CDPProperty,
+  CDPMatchedRule,
+} from "../types.js";
+import { getMatchedStyles, getStyleSheetText, extractSnippet } from "./css.js";
 
 /**
  * CSS shorthand to longhand mappings
  */
 const SHORTHAND_TO_LONGHAND: Record<string, string[]> = {
-  'margin': ['margin-top', 'margin-right', 'margin-bottom', 'margin-left'],
-  'padding': ['padding-top', 'padding-right', 'padding-bottom', 'padding-left'],
-  'border': [
-    'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width',
-    'border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style',
-    'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color'
+  margin: ["margin-top", "margin-right", "margin-bottom", "margin-left"],
+  padding: ["padding-top", "padding-right", "padding-bottom", "padding-left"],
+  border: [
+    "border-top-width",
+    "border-right-width",
+    "border-bottom-width",
+    "border-left-width",
+    "border-top-style",
+    "border-right-style",
+    "border-bottom-style",
+    "border-left-style",
+    "border-top-color",
+    "border-right-color",
+    "border-bottom-color",
+    "border-left-color",
   ],
-  'border-top': ['border-top-width', 'border-top-style', 'border-top-color'],
-  'border-right': ['border-right-width', 'border-right-style', 'border-right-color'],
-  'border-bottom': ['border-bottom-width', 'border-bottom-style', 'border-bottom-color'],
-  'border-left': ['border-left-width', 'border-left-style', 'border-left-color'],
-  'border-width': ['border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width'],
-  'border-style': ['border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style'],
-  'border-color': ['border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color'],
-  'background': ['background-color', 'background-image', 'background-repeat', 'background-position', 'background-size'],
-  'font': ['font-style', 'font-variant', 'font-weight', 'font-size', 'line-height', 'font-family'],
-  'flex': ['flex-grow', 'flex-shrink', 'flex-basis'],
+  "border-top": ["border-top-width", "border-top-style", "border-top-color"],
+  "border-right": [
+    "border-right-width",
+    "border-right-style",
+    "border-right-color",
+  ],
+  "border-bottom": [
+    "border-bottom-width",
+    "border-bottom-style",
+    "border-bottom-color",
+  ],
+  "border-left": [
+    "border-left-width",
+    "border-left-style",
+    "border-left-color",
+  ],
+  "border-width": [
+    "border-top-width",
+    "border-right-width",
+    "border-bottom-width",
+    "border-left-width",
+  ],
+  "border-style": [
+    "border-top-style",
+    "border-right-style",
+    "border-bottom-style",
+    "border-left-style",
+  ],
+  "border-color": [
+    "border-top-color",
+    "border-right-color",
+    "border-bottom-color",
+    "border-left-color",
+  ],
+  background: [
+    "background-color",
+    "background-image",
+    "background-repeat",
+    "background-position",
+    "background-size",
+  ],
+  font: [
+    "font-style",
+    "font-variant",
+    "font-weight",
+    "font-size",
+    "line-height",
+    "font-family",
+  ],
+  flex: ["flex-grow", "flex-shrink", "flex-basis"],
 };
 
 /**
@@ -45,14 +98,17 @@ export function getLonghands(shorthand: string): string[] | undefined {
 export async function findWinningDeclaration(
   cdpSession: CDPSession,
   nodeId: number,
-  property: string
-): Promise<{ winner?: CssDeclarationSource; contributors?: CssDeclarationSource[] }> {
+  property: string,
+): Promise<{
+  winner?: CssDeclarationSource;
+  contributors?: CssDeclarationSource[];
+}> {
   const matchedStyles = await getMatchedStyles(cdpSession, nodeId);
 
   const allDeclarations: Array<{
     property: CDPProperty;
-    rule: any;
-    matchedRule?: any;
+    rule: unknown;
+    matchedRule?: unknown;
   }> = [];
 
   // Collect inline styles
@@ -61,7 +117,7 @@ export async function findWinningDeclaration(
       if (prop.name === property && !prop.disabled) {
         allDeclarations.push({
           property: prop,
-          rule: { origin: 'inline', style: matchedStyles.inlineStyle },
+          rule: { origin: "inline", style: matchedStyles.inlineStyle },
         });
       }
     }
@@ -86,9 +142,19 @@ export async function findWinningDeclaration(
 
   // Check inherited styles (simplified - just note if it might be inherited)
   const inheritedProperties = new Set([
-    'color', 'font-family', 'font-size', 'font-weight', 'font-style',
-    'line-height', 'text-align', 'text-transform', 'letter-spacing',
-    'word-spacing', 'white-space', 'visibility', 'cursor'
+    "color",
+    "font-family",
+    "font-size",
+    "font-weight",
+    "font-style",
+    "line-height",
+    "text-align",
+    "text-transform",
+    "letter-spacing",
+    "word-spacing",
+    "white-space",
+    "visibility",
+    "cursor",
   ]);
 
   if (allDeclarations.length === 0 && inheritedProperties.has(property)) {
@@ -104,17 +170,24 @@ export async function findWinningDeclaration(
   // Sort by cascade order
   // 1. !important declarations come first
   // 2. Later declarations win over earlier ones
-  const importantDeclarations = allDeclarations.filter(d => d.property.important);
-  const normalDeclarations = allDeclarations.filter(d => !d.property.important);
+  const importantDeclarations = allDeclarations.filter(
+    (d) => d.property.important,
+  );
+  const normalDeclarations = allDeclarations.filter(
+    (d) => !d.property.important,
+  );
 
-  const winner = importantDeclarations.length > 0
-    ? importantDeclarations[importantDeclarations.length - 1]
-    : normalDeclarations[normalDeclarations.length - 1];
+  const winner =
+    importantDeclarations.length > 0
+      ? importantDeclarations[importantDeclarations.length - 1]
+      : normalDeclarations[normalDeclarations.length - 1];
 
   // Convert to CssDeclarationSource
   const winnerSource = await declarationToSource(cdpSession, winner);
   const contributorSources = await Promise.all(
-    allDeclarations.filter(d => d !== winner).map(d => declarationToSource(cdpSession, d))
+    allDeclarations
+      .filter((d) => d !== winner)
+      .map((d) => declarationToSource(cdpSession, d)),
   );
 
   return {
@@ -128,17 +201,17 @@ export async function findWinningDeclaration(
  */
 async function declarationToSource(
   cdpSession: CDPSession,
-  declaration: { property: CDPProperty; rule: any; matchedRule?: any }
+  declaration: { property: CDPProperty; rule: unknown; matchedRule?: unknown },
 ): Promise<CssDeclarationSource> {
-  const { property, rule, matchedRule } = declaration;
+  const { property, rule } = declaration;
 
   const source: CssDeclarationSource = {
-    source: rule.origin === 'inline' ? 'inline' : 'stylesheet',
+    source: rule.origin === "inline" ? "inline" : "stylesheet",
     value: property.value,
     important: property.important,
   };
 
-  if (rule.origin !== 'inline') {
+  if (rule.origin !== "inline") {
     // Add selector
     if (rule.selectorList?.text) {
       source.selector = rule.selectorList.text;
@@ -158,7 +231,11 @@ async function declarationToSource(
           source.column = property.range.startColumn;
 
           // Extract snippet
-          const snippet = extractSnippet(text, property.range.startLine, property.range.startColumn);
+          const snippet = extractSnippet(
+            text,
+            property.range.startLine,
+            property.range.startColumn,
+          );
           if (snippet) {
             source.snippet = snippet.trim();
           }
@@ -166,12 +243,12 @@ async function declarationToSource(
 
         // Try to get stylesheet URL from the stylesheet header
         try {
-          const { header } = await cdpSession.send('CSS.getStyleSheetText', {
+          const result = (await cdpSession.send("CSS.getStyleSheetText", {
             styleSheetId,
-          }) as any;
+          })) as { header?: { sourceURL?: string } };
 
-          if (header?.sourceURL) {
-            source.stylesheetUrl = header.sourceURL;
+          if (result.header?.sourceURL) {
+            source.stylesheetUrl = result.header.sourceURL;
           }
         } catch {
           // Ignore - stylesheet URL is optional

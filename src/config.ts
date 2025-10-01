@@ -1,7 +1,7 @@
-import { readFileSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { config as loadEnv } from 'dotenv';
-import type { Config, ResolvedConfig } from './types.js';
+import { readFileSync } from "fs";
+import { resolve, dirname } from "path";
+import { config as loadEnv } from "dotenv";
+import type { Config, ResolvedConfig } from "./types.js";
 
 export interface LoadConfigOptions {
   configPath: string;
@@ -22,14 +22,16 @@ export interface LoadedConfig {
  * Load and validate configuration from file.
  * Relative paths in the config are resolved relative to the config file's directory.
  */
-export async function loadConfig(options: LoadConfigOptions): Promise<LoadedConfig> {
+export async function loadConfig(
+  options: LoadConfigOptions,
+): Promise<LoadedConfig> {
   const configPath = resolve(options.configPath);
   const configDir = dirname(configPath);
 
   // Read and parse config file
   let raw: Config;
   try {
-    const contents = readFileSync(configPath, 'utf-8');
+    const contents = readFileSync(configPath, "utf-8");
     raw = JSON.parse(contents);
   } catch (err) {
     throw new Error(`Failed to load config from ${configPath}: ${err}`);
@@ -62,7 +64,7 @@ export async function loadConfig(options: LoadConfigOptions): Promise<LoadedConf
   };
 
   // Prepare hooks config
-  let hooksConfig: LoadedConfig['hooks'];
+  let hooksConfig: LoadedConfig["hooks"];
   if (raw.hooks?.modulePath) {
     hooksConfig = {
       modulePath: resolve(configDir, raw.hooks.modulePath),
@@ -82,7 +84,10 @@ export async function loadConfig(options: LoadConfigOptions): Promise<LoadedConf
 /**
  * Validate that a URL is allowed by the policy
  */
-export function isOriginAllowed(url: string, allowedOrigins?: string[]): boolean {
+export function isOriginAllowed(
+  url: string,
+  allowedOrigins?: string[],
+): boolean {
   if (!allowedOrigins || allowedOrigins.length === 0) {
     return true;
   }

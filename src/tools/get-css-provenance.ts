@@ -1,15 +1,19 @@
-import type { GetCssProvenanceParams, GetCssProvenanceResult, CssProvenanceInfo } from '../types.js';
-import { ErrorCode, createError } from '../errors.js';
-import { sessionManager } from '../session/manager.js';
-import { resolveElementTargets } from '../cdp/dom.js';
-import { getComputedStyles } from '../cdp/css.js';
-import { isShorthand, findWinningDeclaration } from '../cdp/cascade.js';
+import type {
+  GetCssProvenanceParams,
+  GetCssProvenanceResult,
+  CssProvenanceInfo,
+} from "../types.js";
+import { ErrorCode, createError } from "../errors.js";
+import { sessionManager } from "../session/manager.js";
+import { resolveElementTargets } from "../cdp/dom.js";
+import { getComputedStyles } from "../cdp/css.js";
+import { isShorthand, findWinningDeclaration } from "../cdp/cascade.js";
 
 /**
  * Get CSS provenance for a property
  */
 export async function getCssProvenance(
-  params: GetCssProvenanceParams
+  params: GetCssProvenanceParams,
 ): Promise<GetCssProvenanceResult> {
   const session = sessionManager.getSession();
   const maxResults = Math.min(params.maxResults ?? 10, 50); // Cap at 50
@@ -21,8 +25,9 @@ export async function getCssProvenance(
       `Property '${params.property}' is a CSS shorthand. Please use the longhand property instead.`,
       {
         property: params.property,
-        suggestion: 'Use specific longhand properties like border-top-width, margin-left, etc.'
-      }
+        suggestion:
+          "Use specific longhand properties like border-top-width, margin-left, etc.",
+      },
     );
   }
 
@@ -31,14 +36,14 @@ export async function getCssProvenance(
     const nodeIds = await resolveElementTargets(
       session.cdpSession,
       params.target,
-      maxResults
+      maxResults,
     );
 
     if (nodeIds.length === 0) {
       throw createError(
         ErrorCode.ELEMENT_NOT_FOUND,
         `No elements found matching target`,
-        { target: params.target }
+        { target: params.target },
       );
     }
 
@@ -50,11 +55,9 @@ export async function getCssProvenance(
 
     for (const nodeId of nodeIds) {
       // Get computed value
-      const computed = await getComputedStyles(
-        session.cdpSession,
-        nodeId,
-        [params.property]
-      );
+      const computed = await getComputedStyles(session.cdpSession, nodeId, [
+        params.property,
+      ]);
 
       const computedValue = computed[params.property] || null;
 
@@ -62,7 +65,7 @@ export async function getCssProvenance(
       const { winner, contributors } = await findWinningDeclaration(
         session.cdpSession,
         nodeId,
-        params.property
+        params.property,
       );
 
       const info: CssProvenanceInfo = {
@@ -74,7 +77,11 @@ export async function getCssProvenance(
         info.winner = winner;
       }
 
-      if (params.includeContributors && contributors && contributors.length > 0) {
+      if (
+        params.includeContributors &&
+        contributors &&
+        contributors.length > 0
+      ) {
         info.contributors = contributors;
       }
 
@@ -86,23 +93,30 @@ export async function getCssProvenance(
       results,
     };
   } catch (err) {
-    if ((err as any).error?.code) {
+    if (
+      typeof err === "object" &&
+      err !== null &&
+      "error" in err &&
+      typeof (err as { error: unknown }).error === "object" &&
+      (err as { error: unknown }).error !== null &&
+      "code" in (err as { error: { code: unknown } }).error
+    ) {
       throw err;
     }
 
     // Check for timeout
-    if (String(err).includes('Timeout') || String(err).includes('timeout')) {
+    if (String(err).includes("Timeout") || String(err).includes("timeout")) {
       throw createError(
         ErrorCode.QUERY_TIMEOUT,
         `Query timed out after ${session.config.timeouts.queryMs}ms`,
-        { originalError: String(err) }
+        { originalError: String(err) },
       );
     }
 
     throw createError(
       ErrorCode.UNEXPECTED_ERROR,
       `Failed to get CSS provenance: ${err}`,
-      { originalError: String(err) }
+      { originalError: String(err) },
     );
   }
 }

@@ -1,7 +1,7 @@
-import { chromium } from 'playwright';
-import type { SessionState, ResolvedConfig } from '../types.js';
-import { ErrorCode, createError, type DevToolsError } from '../errors.js';
-import { IdleTimer } from './idle-timer.js';
+import { chromium } from "playwright";
+import type { SessionState, ResolvedConfig } from "../types.js";
+import { ErrorCode, createError } from "../errors.js";
+import { IdleTimer } from "./idle-timer.js";
 
 /**
  * Singleton session manager
@@ -32,7 +32,7 @@ class SessionManager {
     if (!this.session) {
       throw createError(
         ErrorCode.NO_ACTIVE_SESSION,
-        'No active session. Call devtools.session.start first.'
+        "No active session. Call devtools.session.start first.",
       );
     }
     return this.session;
@@ -117,8 +117,8 @@ class SessionManager {
       } catch (err) {
         throw createError(
           ErrorCode.HOOKS_STOP_FAILED,
-          'Hook stop function threw an error',
-          { originalError: String(err) }
+          "Hook stop function threw an error",
+          { originalError: String(err) },
         );
       }
     }
@@ -129,7 +129,7 @@ class SessionManager {
    */
   async createPlaywrightSession(
     config: ResolvedConfig,
-    hookStopFn?: () => void | Promise<void>
+    hookStopFn?: () => void | Promise<void>,
   ): Promise<SessionState> {
     try {
       // Launch browser
@@ -138,7 +138,7 @@ class SessionManager {
       });
 
       // Create context
-      const contextOptions: any = {};
+      const contextOptions: Record<string, unknown> = {};
       if (config.playwright.baseURL) {
         contextOptions.baseURL = config.playwright.baseURL;
       }
@@ -155,8 +155,8 @@ class SessionManager {
       const cdpSession = await page.context().newCDPSession(page);
 
       // Enable CSS and DOM domains
-      await cdpSession.send('CSS.enable');
-      await cdpSession.send('DOM.enable');
+      await cdpSession.send("CSS.enable");
+      await cdpSession.send("DOM.enable");
 
       return {
         browser,
@@ -170,8 +170,8 @@ class SessionManager {
     } catch (err) {
       throw createError(
         ErrorCode.PLAYWRIGHT_LAUNCH_FAILED,
-        'Failed to launch Playwright',
-        { originalError: String(err) }
+        "Failed to launch Playwright",
+        { originalError: String(err) },
       );
     }
   }
