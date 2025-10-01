@@ -154,9 +154,9 @@ class SessionManager {
       // Create CDP session
       const cdpSession = await page.context().newCDPSession(page);
 
-      // Enable CSS and DOM domains
-      await cdpSession.send("CSS.enable");
+      // Enable DOM and CSS domains (DOM must be enabled first)
       await cdpSession.send("DOM.enable");
+      await cdpSession.send("CSS.enable");
 
       return {
         browser,

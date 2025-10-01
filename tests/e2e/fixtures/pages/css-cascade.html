@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Cascade Test</title>
+  <style>
+    /* Test 1: Basic cascade with specificity */
+    .box {
+      color: blue;
+      font-size: 16px;
+      margin-top: 10px;
+      margin-right: 20px;
+      margin-bottom: 10px;
+      margin-left: 20px;
+    }
+
+    #special-box {
+      color: red;
+      font-size: 24px;
+    }
+
+    /* Test 2: Border shorthand expansion */
+    .border-test {
+      border-top-width: 1px;
+      border-top-style: solid;
+      border-top-color: black;
+      border-right-width: 2px;
+      border-right-style: dashed;
+      border-right-color: blue;
+      border-bottom-width: 3px;
+      border-bottom-style: dotted;
+      border-bottom-color: green;
+      border-left-width: 4px;
+      border-left-style: double;
+      border-left-color: red;
+    }
+
+    /* Test 3: Multiple competing rules */
+    .priority-test {
+      padding-left: 10px;
+    }
+
+    .priority-test {
+      padding-left: 20px; /* This should win (last rule) */
+    }
+
+    /* Test 4: Important declaration */
+    .important-test {
+      background-color: yellow !important;
+      padding-top: 5px;
+    }
+
+    .important-test {
+      background-color: green; /* Should lose to !important */
+      padding-top: 15px; /* Should win (no !important) */
+    }
+
+    /* Test 5: Inheritance */
+    .parent {
+      color: purple;
+      font-family: Arial, sans-serif;
+      line-height: 1.5;
+    }
+
+    /* Test 6: Computed values with units */
+    .units-test {
+      width: 50%;
+      height: 10em;
+      font-size: 14px;
+    }
+
+    /* Test 7: Multiple elements with same class */
+    .multi {
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top-width: 2px;
+      border-top-style: solid;
+      border-top-color: orange;
+    }
+  </style>
+</head>
+<body>
+  <div class="box" id="special-box">Special Box</div>
+  <div class="border-test">Border Test</div>
+  <div class="priority-test">Priority Test</div>
+  <div class="important-test">Important Test</div>
+
+  <div class="parent">
+    <span class="child">Inherited Child</span>
+  </div>
+
+  <div class="units-test">Units Test</div>
+
+  <!-- Multiple elements with same class -->
+  <div class="multi">Multi 1</div>
+  <div class="multi">Multi 2</div>
+  <div class="multi">Multi 3</div>
+  <div class="multi">Multi 4</div>
+  <div class="multi">Multi 5</div>
+
+  <!-- Inline style test -->
+  <div class="box" style="color: green; font-weight: bold;">Inline Style Test</div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "playwright": {
+    "baseURL": "http://localhost:3456",
+    "headless": true
+  },
+  "hooks": {
+    "modulePath": "./fixtures/test-hooks.ts"
+  },
+  "policy": {
+    "idleMs": 60000
+  },
+  "timeouts": {
+    "navigationMs": 15000,
+    "queryMs": 8000
+  }
+}

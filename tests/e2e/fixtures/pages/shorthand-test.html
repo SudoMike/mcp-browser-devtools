@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shorthand CSS Test</title>
+  <style>
+    /* Test various shorthand vs longhand scenarios */
+    .margin-box {
+      margin-top: 10px;
+      margin-right: 15px;
+      margin-bottom: 20px;
+      margin-left: 25px;
+      padding-top: 5px;
+      padding-right: 10px;
+      padding-bottom: 15px;
+      padding-left: 20px;
+    }
+
+    .border-box {
+      border-top-width: 3px;
+      border-top-style: solid;
+      border-top-color: rgb(255, 0, 0);
+      border-right-width: 3px;
+      border-right-style: solid;
+      border-right-color: rgb(0, 255, 0);
+      border-bottom-width: 3px;
+      border-bottom-style: solid;
+      border-bottom-color: rgb(0, 0, 255);
+      border-left-width: 3px;
+      border-left-style: solid;
+      border-left-color: rgb(255, 255, 0);
+    }
+
+    .background-box {
+      background-color: rgb(200, 200, 200);
+      background-image: none;
+      background-repeat: repeat;
+      background-position: 0% 0%;
+      background-size: auto;
+    }
+
+    .font-box {
+      font-style: italic;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 24px;
+      font-family: "Times New Roman", serif;
+    }
+
+    .flex-box {
+      display: flex;
+      flex-grow: 1;
+      flex-shrink: 1;
+      flex-basis: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="margin-box">Margin Box</div>
+  <div class="border-box">Border Box</div>
+  <div class="background-box">Background Box</div>
+  <div class="font-box">Font Box</div>
+  <div class="flex-box">Flex Box</div>
+</body>
+</html>
