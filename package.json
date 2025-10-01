@@ -10,7 +10,11 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "check": "npm run lint && npm run format:check"
   },
   "keywords": [
     "mcp",
@@ -26,9 +30,13 @@
     "playwright": "^1.40.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.2.4",
+    "@eslint/js": "^9.36.0",
     "@types/node": "^24.6.1",
+    "eslint": "^9.36.0",
     "playwright": "^1.55.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.45.0"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.18.2",
