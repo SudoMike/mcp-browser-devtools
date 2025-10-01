@@ -321,7 +321,7 @@ describe("Element Queries and Multiple Results", () => {
       await navigate({ url: "/multiple-elements.html" });
 
       const result = await getElement({
-        target: { kind: "id", value: "first" },
+        target: { kind: "id", value: "test-button" },
         include: ["boxModel", "computed", "attributes", "role"],
       });
 
@@ -329,11 +329,12 @@ describe("Element Queries and Multiple Results", () => {
       const element = result.results[0];
 
       expect(element.exists).toBe(true);
-      expect(element.nodeName).toBe("DIV");
+      expect(element.nodeName).toBe("BUTTON");
       expect(element.attributes).toBeDefined();
       expect(element.boxModel).toBeDefined();
       expect(element.computed).toBeDefined();
-      expect(element.role).toBeDefined();
+      // Button has implicit role of "button"
+      expect(element.role).toBe("button");
     });
 
     it("should return only requested information types", async () => {
