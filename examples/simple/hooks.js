@@ -9,7 +9,7 @@
 /**
  * Default scenario - just starts without any special setup
  */
-export async function startDefault({ projectRoot, env, baseURL }) {
+export async function startDefault({ page, env, baseURL }) {
   console.error("[hooks] Starting in default mode");
 
   // You could start your app server here
@@ -26,11 +26,11 @@ export async function startDefault({ projectRoot, env, baseURL }) {
 /**
  * Logged-in scenario - performs login after browser is ready
  */
-export async function startLoggedIn({ page, projectRoot, env, baseURL }) {
+export async function startLoggedIn({ page, env, baseURL }) {
   console.error("[hooks] Starting in logged-in mode");
 
-  // If page is provided, we can perform login
-  if (page && baseURL) {
+  // Perform login
+  if (baseURL) {
     console.error("[hooks] Performing login...");
 
     // Example login flow (customize for your app)

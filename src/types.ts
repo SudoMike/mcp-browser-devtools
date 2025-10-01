@@ -51,9 +51,8 @@ export type HookFunction = (
 ) => HookResult | Promise<HookResult>;
 
 export interface HookContext {
-  page?: Page;
+  page: Page;
   baseURL?: string;
-  projectRoot: string;
   env: Record<string, string>;
 }
 
