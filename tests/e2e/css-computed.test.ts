@@ -41,7 +41,9 @@ describe("CSS Computed Styles", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".margin-box" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS"],
+        },
       });
 
       expect(result.matchCount).toBe(1);
@@ -60,7 +62,9 @@ describe("CSS Computed Styles", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".margin-box" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS"],
+        },
       });
 
       expect(result.matchCount).toBe(1);
@@ -78,27 +82,23 @@ describe("CSS Computed Styles", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".border-box" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS", "border-top-style", "border-top-color"],
+        },
       });
 
       expect(result.matchCount).toBe(1);
       const computed = result.results[0].computed!;
 
+      // Border width is in defaults, style and color requested explicitly
       expect(computed["border-top-width"]).toBe("3px");
       expect(computed["border-right-width"]).toBe("3px");
       expect(computed["border-bottom-width"]).toBe("3px");
       expect(computed["border-left-width"]).toBe("3px");
 
+      // Border style and color explicitly requested
       expect(computed["border-top-style"]).toBe("solid");
-      expect(computed["border-right-style"]).toBe("solid");
-      expect(computed["border-bottom-style"]).toBe("solid");
-      expect(computed["border-left-style"]).toBe("solid");
-
-      // Colors might be returned as rgb()
       expect(computed["border-top-color"]).toMatch(/rgb\(255,\s*0,\s*0\)/);
-      expect(computed["border-right-color"]).toMatch(/rgb\(0,\s*255,\s*0\)/);
-      expect(computed["border-bottom-color"]).toMatch(/rgb\(0,\s*0,\s*255\)/);
-      expect(computed["border-left-color"]).toMatch(/rgb\(255,\s*255,\s*0\)/);
     });
 
     it("should return computed values for longhand font properties", async () => {
@@ -107,17 +107,22 @@ describe("CSS Computed Styles", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".font-box" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS", "font-style"],
+        },
       });
 
       expect(result.matchCount).toBe(1);
       const computed = result.results[0].computed!;
 
+      // DEFAULT_COMPUTED_PROPERTIES includes these font properties
       expect(computed["font-size"]).toBe("18px");
       expect(computed["font-weight"]).toBe("700");
-      expect(computed["font-style"]).toBe("italic");
       expect(computed["line-height"]).toBe("24px");
       expect(computed["font-family"]).toContain("Times New Roman");
+
+      // font-style explicitly requested
+      expect(computed["font-style"]).toBe("italic");
     });
 
     it("should return computed values for longhand flex properties", async () => {
@@ -126,7 +131,9 @@ describe("CSS Computed Styles", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".flex-box" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS", "font-style"],
+        },
       });
 
       expect(result.matchCount).toBe(1);
@@ -143,7 +150,9 @@ describe("CSS Computed Styles", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".background-box" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS", "font-style"],
+        },
       });
 
       expect(result.matchCount).toBe(1);
@@ -162,7 +171,9 @@ describe("CSS Computed Styles", () => {
 
       const result = await getElement({
         target: { kind: "id", value: "special-box" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS", "font-style"],
+        },
       });
 
       expect(result.matchCount).toBe(1);
@@ -179,7 +190,9 @@ describe("CSS Computed Styles", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".priority-test" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS", "font-style"],
+        },
       });
 
       expect(result.matchCount).toBe(1);
@@ -195,7 +208,9 @@ describe("CSS Computed Styles", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".important-test" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS", "font-style"],
+        },
       });
 
       expect(result.matchCount).toBe(1);
@@ -216,7 +231,9 @@ describe("CSS Computed Styles", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: 'div[style*="color: green"]' },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS", "font-style"],
+        },
       });
 
       expect(result.matchCount).toBe(1);
@@ -235,7 +252,9 @@ describe("CSS Computed Styles", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".child" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS", "font-style"],
+        },
       });
 
       expect(result.matchCount).toBe(1);

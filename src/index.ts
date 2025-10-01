@@ -119,12 +119,30 @@ const tools: Tool[] = [
           required: ["kind", "value"],
         },
         include: {
-          type: "array",
-          items: {
-            type: "string",
-            enum: ["boxModel", "computed", "attributes", "role"],
+          type: "object",
+          properties: {
+            boxModel: {
+              type: "boolean",
+              description: "Include box model (dimensions, padding, border, margin)",
+            },
+            attributes: {
+              type: "boolean",
+              description: "Include element attributes (id, class, etc.)",
+            },
+            role: {
+              type: "boolean",
+              description: "Include ARIA role (explicit or inferred)",
+            },
+            computed: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+              description:
+                'Array of CSS property names to include. Use "ALL_DEFAULTS" to include default high-value properties (display, position, width, height, margin-*, padding-*, border-*-width, font-*, color, background-color, etc.). Example: ["ALL_DEFAULTS", "border-left-color", "font-style"]',
+            },
           },
-          description: "What information to include (default: all)",
+          description: "What information to include (all fields default to false/empty if not specified)",
         },
         maxResults: {
           type: "number",

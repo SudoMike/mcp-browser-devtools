@@ -53,29 +53,38 @@ export async function getElement(
       info.nodeName = await getNodeName(session.cdpSession, nodeId);
 
       // Get requested facts
-      const include = params.include || [];
+      const include = params.include || {};
 
-      if (include.includes("attributes")) {
+      if (include.attributes) {
         info.attributes = await getElementAttributes(
           session.cdpSession,
           nodeId,
         );
       }
 
-      if (include.includes("boxModel")) {
+      if (include.boxModel) {
         info.boxModel = await getElementBoxModel(session.cdpSession, nodeId);
       }
 
-      if (include.includes("computed")) {
-        // Use default high-value properties
+      if (include.computed) {
+        // Expand "ALL_DEFAULTS" and build property list
+        let properties: string[] = [];
+        for (const prop of include.computed) {
+          if (prop === "ALL_DEFAULTS") {
+            properties.push(...DEFAULT_COMPUTED_PROPERTIES);
+          } else {
+            properties.push(prop);
+          }
+        }
+
         info.computed = await getComputedStyles(
           session.cdpSession,
           nodeId,
-          DEFAULT_COMPUTED_PROPERTIES,
+          properties,
         );
       }
 
-      if (include.includes("role")) {
+      if (include.role) {
         // Try to get role from attributes first
         if (info.attributes && info.attributes.role) {
           info.role = info.attributes.role;

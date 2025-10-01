@@ -112,7 +112,12 @@ export interface ElementTarget {
 
 export interface GetElementParams {
   target: ElementTarget;
-  include?: Array<"boxModel" | "computed" | "attributes" | "role">;
+  include?: {
+    boxModel?: boolean;
+    attributes?: boolean;
+    role?: boolean;
+    computed?: string[]; // Array of CSS property names. Use "ALL_DEFAULTS" to include default properties.
+  };
   maxResults?: number;
 }
 

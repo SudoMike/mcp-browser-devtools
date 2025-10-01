@@ -42,7 +42,10 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "id", value: "first" },
-        include: ["attributes", "computed"],
+        include: {
+          attributes: true,
+          computed: ["ALL_DEFAULTS"],
+        },
       });
 
       expect(result.matchCount).toBe(1);
@@ -58,7 +61,9 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: "#second" },
-        include: ["attributes"],
+        include: {
+          attributes: true,
+        },
       });
 
       expect(result.matchCount).toBe(1);
@@ -74,7 +79,9 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".item" },
-        include: ["attributes"],
+        include: {
+          attributes: true,
+        },
       });
 
       // Default maxResults is 10
@@ -93,7 +100,9 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".item" },
-        include: ["attributes"],
+        include: {
+          attributes: true,
+        },
         maxResults: 5,
       });
 
@@ -107,7 +116,9 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".item" },
-        include: ["attributes"],
+        include: {
+          attributes: true,
+        },
         maxResults: 3,
       });
 
@@ -121,7 +132,9 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".item" },
-        include: ["attributes"],
+        include: {
+          attributes: true,
+        },
         maxResults: 15,
       });
 
@@ -137,7 +150,9 @@ describe("Element Queries and Multiple Results", () => {
       // Request more than 50
       const result = await getElement({
         target: { kind: "selector", value: ".item" },
-        include: ["attributes"],
+        include: {
+          attributes: true,
+        },
         maxResults: 100,
       });
 
@@ -152,7 +167,9 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".item.special" },
-        include: ["attributes"],
+        include: {
+          attributes: true,
+        },
       });
 
       // Only 2 items have both 'item' and 'special' classes
@@ -172,7 +189,9 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".multi" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS"],
+        },
         maxResults: 5,
       });
 
@@ -194,17 +213,23 @@ describe("Element Queries and Multiple Results", () => {
 
       const first = await getElement({
         target: { kind: "id", value: "first" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS"],
+        },
       });
 
       const second = await getElement({
         target: { kind: "id", value: "second" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS"],
+        },
       });
 
       const third = await getElement({
         target: { kind: "id", value: "third" },
-        include: ["computed"],
+        include: {
+          computed: ["ALL_DEFAULTS"],
+        },
       });
 
       // Each should have different colors
@@ -277,7 +302,9 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".special" },
-        include: ["attributes"],
+        include: {
+          attributes: true,
+        },
         maxResults: 10,
       });
 
@@ -292,7 +319,9 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "id", value: "first" },
-        include: ["attributes"],
+        include: {
+          attributes: true,
+        },
       });
 
       expect(result.matchCount).toBe(1);
@@ -305,7 +334,9 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "selector", value: ".item" },
-        include: ["attributes"],
+        include: {
+          attributes: true,
+        },
         maxResults: 7,
       });
 
@@ -322,7 +353,12 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "id", value: "test-button" },
-        include: ["boxModel", "computed", "attributes", "role"],
+        include: {
+          boxModel: true,
+          computed: ["ALL_DEFAULTS"],
+          attributes: true,
+          role: true,
+        },
       });
 
       expect(result.matchCount).toBe(1);
@@ -343,7 +379,9 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "id", value: "first" },
-        include: ["attributes"],
+        include: {
+          attributes: true,
+        },
       });
 
       expect(result.matchCount).toBe(1);
@@ -361,7 +399,9 @@ describe("Element Queries and Multiple Results", () => {
 
       const result = await getElement({
         target: { kind: "id", value: "first" },
-        include: ["boxModel"],
+        include: {
+          boxModel: true,
+        },
       });
 
       expect(result.matchCount).toBe(1);
