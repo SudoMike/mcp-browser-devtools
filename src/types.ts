@@ -288,3 +288,8 @@ export interface CDPStyleSheetHeader {
   endLine: number;
   endColumn: number;
 }
+
+export interface CDPMatchedStyles {
+  inlineStyle?: CDPStyle;
+  matchedCSSRules?: CDPMatchedRule[];
+}

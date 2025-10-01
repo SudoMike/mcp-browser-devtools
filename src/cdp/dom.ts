@@ -1,5 +1,5 @@
 import type { CDPSession } from "playwright";
-import type { ElementTarget } from "../types.js";
+import type { ElementTarget, BoxModel } from "../types.js";
 import { ErrorCode, createError } from "../errors.js";
 
 /**
@@ -79,7 +79,7 @@ export async function getElementAttributes(
 export async function getElementBoxModel(
   cdpSession: CDPSession,
   nodeId: number,
-): Promise<unknown> {
+): Promise<BoxModel | undefined> {
   try {
     const { model } = await cdpSession.send("DOM.getBoxModel", { nodeId });
 
@@ -103,7 +103,7 @@ export async function getElementBoxModel(
     };
   } catch {
     // Element may not have a box model (display: none, detached, etc.)
-    return null;
+    return undefined;
   }
 }
 

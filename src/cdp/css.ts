@@ -1,5 +1,5 @@
 import type { CDPSession } from "playwright";
-import type { CDPComputedStyle } from "../types.js";
+import type { CDPComputedStyle, CDPMatchedStyles } from "../types.js";
 import { ErrorCode, createError } from "../errors.js";
 
 /**
@@ -43,13 +43,13 @@ export async function getComputedStyles(
 export async function getMatchedStyles(
   cdpSession: CDPSession,
   nodeId: number,
-): Promise<unknown> {
+): Promise<CDPMatchedStyles> {
   try {
     const result = await cdpSession.send("CSS.getMatchedStylesForNode", {
       nodeId,
     });
 
-    return result;
+    return result as CDPMatchedStyles;
   } catch (err) {
     throw createError(
       ErrorCode.CSS_DOMAIN_UNAVAILABLE,

@@ -11,6 +11,11 @@ import {
 import { loadConfig, type LoadedConfig } from "./config.js";
 import { sessionManager } from "./session/manager.js";
 import { isDevToolsError } from "./errors.js";
+import type {
+  NavigateParams,
+  GetElementParams,
+  GetCssProvenanceParams,
+} from "./types.js";
 
 import { sessionStart } from "./tools/session-start.js";
 import { sessionStop } from "./tools/session-stop.js";
@@ -225,21 +230,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case "devtools.session.navigate": {
-        const result = await navigate(args as Record<string, unknown>);
+        const result = await navigate(args as unknown as NavigateParams);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
 
       case "devtools.getElement": {
-        const result = await getElement(args as Record<string, unknown>);
+        const result = await getElement(args as unknown as GetElementParams);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
 
       case "devtools.getCssProvenance": {
-        const result = await getCssProvenance(args as Record<string, unknown>);
+        const result = await getCssProvenance(
+          args as unknown as GetCssProvenanceParams,
+        );
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };

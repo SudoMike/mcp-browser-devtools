@@ -3,6 +3,7 @@ import type {
   CssDeclarationSource,
   CDPProperty,
   CDPMatchedRule,
+  CDPRule,
 } from "../types.js";
 import { getMatchedStyles, getStyleSheetText, extractSnippet } from "./css.js";
 
@@ -107,7 +108,7 @@ export async function findWinningDeclaration(
 
   const allDeclarations: Array<{
     property: CDPProperty;
-    rule: unknown;
+    rule: CDPRule | { origin: "inline"; style: typeof matchedStyles.inlineStyle };
     matchedRule?: unknown;
   }> = [];
 
@@ -175,10 +176,10 @@ export async function findWinningDeclaration(
   // 4. Stylesheet normal (by specificity, then source order)
 
   const inlineDeclarations = allDeclarations.filter(
-    (d) => d.rule.origin === "inline",
+    (d) => "origin" in d.rule && d.rule.origin === "inline",
   );
   const stylesheetDeclarations = allDeclarations.filter(
-    (d) => d.rule.origin !== "inline",
+    (d) => !("origin" in d.rule && d.rule.origin === "inline"),
   );
 
   // Separate by !important
@@ -222,17 +223,22 @@ export async function findWinningDeclaration(
  */
 async function declarationToSource(
   cdpSession: CDPSession,
-  declaration: { property: CDPProperty; rule: unknown; matchedRule?: unknown },
+  declaration: {
+    property: CDPProperty;
+    rule: CDPRule | { origin: "inline"; style: unknown };
+    matchedRule?: unknown;
+  },
 ): Promise<CssDeclarationSource> {
   const { property, rule } = declaration;
 
+  const isInline = "origin" in rule && rule.origin === "inline";
   const source: CssDeclarationSource = {
-    source: rule.origin === "inline" ? "inline" : "stylesheet",
+    source: isInline ? "inline" : "stylesheet",
     value: property.value,
     important: property.important,
   };
 
-  if (rule.origin !== "inline") {
+  if (!isInline && "selectorList" in rule) {
     // Add selector
     if (rule.selectorList?.text) {
       source.selector = rule.selectorList.text;
