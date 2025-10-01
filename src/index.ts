@@ -61,21 +61,25 @@ const tools: Tool[] = [
   {
     name: "devtools.session.start",
     description:
-      "Start a new Playwright browser session. Optionally specify a scenario to run hooks (e.g., logged-in vs guest mode). Only one session can be active at a time.",
+      "Start a new Playwright browser session. " +
+      "Optionally specify a scenario to run hooks (e.g., logged-in vs guest mode). " +
+      "Only one session can be active at a time.",
     inputSchema: {
       type: "object",
       properties: {
         scenario: {
           type: "string",
           description:
-            "Optional scenario name to run specific hooks (must be defined in config)",
+            "Optional scenario name to run specific hooks " +
+            "(must be defined in config)",
         },
       },
     },
   },
   {
     name: "devtools.session.stop",
-    description: "Stop the current browser session and clean up all resources.",
+    description:
+      "Stop the current browser session and clean up all resources.",
     inputSchema: {
       type: "object",
       properties: {},
@@ -84,13 +88,15 @@ const tools: Tool[] = [
   {
     name: "devtools.session.navigate",
     description:
-      "Navigate the browser to a URL. The URL can be absolute or relative to baseURL.",
+      "Navigate the browser to a URL. " +
+      "The URL can be absolute or relative to baseURL.",
     inputSchema: {
       type: "object",
       properties: {
         url: {
           type: "string",
-          description: "URL to navigate to (absolute or relative to baseURL)",
+          description:
+            "URL to navigate to (absolute or relative to baseURL)",
         },
         wait: {
           type: "string",
@@ -104,7 +110,9 @@ const tools: Tool[] = [
   {
     name: "devtools.getElement",
     description:
-      "Get detailed information about elements matching a selector or ID. Returns box model, computed styles, attributes, and role. Returns first match by default; use maxResults for multiple matches.",
+      "Get detailed information about elements matching a selector or ID. " +
+      "Returns box model, computed styles, attributes, and role. " +
+      "Returns first match by default; use maxResults for multiple matches.",
     inputSchema: {
       type: "object",
       properties: {
@@ -128,7 +136,8 @@ const tools: Tool[] = [
           properties: {
             boxModel: {
               type: "boolean",
-              description: "Include box model (dimensions, padding, border, margin)",
+              description:
+                "Include box model (dimensions, padding, border, margin)",
             },
             attributes: {
               type: "boolean",
@@ -144,15 +153,22 @@ const tools: Tool[] = [
                 type: "string",
               },
               description:
-                'Array of CSS property names to include. Use "ALL_DEFAULTS" to include default high-value properties (display, position, width, height, margin-*, padding-*, border-*-width, font-*, color, background-color, etc.). Example: ["ALL_DEFAULTS", "border-left-color", "font-style"]',
+                'Array of CSS property names to include. ' +
+                'Use "ALL_DEFAULTS" to include default high-value properties ' +
+                "(display, position, width, height, margin-*, padding-*, " +
+                "border-*-width, font-*, color, background-color, etc.). " +
+                'Example: ["ALL_DEFAULTS", "border-left-color", "font-style"]',
             },
           },
-          description: "What information to include (all fields default to false/empty if not specified)",
+          description:
+            "What information to include " +
+            "(all fields default to false/empty if not specified)",
         },
         maxResults: {
           type: "number",
           description:
-            "Maximum number of matching elements to return (default: 10, max: 50)",
+            "Maximum number of matching elements to return " +
+            "(default: 10, max: 50)",
         },
       },
       required: ["target"],
@@ -161,7 +177,11 @@ const tools: Tool[] = [
   {
     name: "devtools.getCssProvenance",
     description:
-      'Get the source of a CSS property value, including which rule/file/line set it. IMPORTANT: You MUST use longhand CSS properties (e.g., "border-top-width", not "border"). Returns computed value and winning declaration with source location.',
+      "Get the source of a CSS property value, " +
+      "including which rule/file/line set it. " +
+      "IMPORTANT: You MUST use longhand CSS properties " +
+      '(e.g., "border-top-width", not "border"). ' +
+      "Returns computed value and winning declaration with source location.",
     inputSchema: {
       type: "object",
       properties: {
@@ -183,7 +203,8 @@ const tools: Tool[] = [
         property: {
           type: "string",
           description:
-            'CSS property name (MUST be longhand, e.g., "border-top-width" not "border")',
+            "CSS property name " +
+            '(MUST be longhand, e.g., "border-top-width" not "border")',
         },
         includeContributors: {
           type: "boolean",
@@ -193,7 +214,8 @@ const tools: Tool[] = [
         maxResults: {
           type: "number",
           description:
-            "Maximum number of matching elements to analyze (default: 10, max: 50)",
+            "Maximum number of matching elements to analyze " +
+            "(default: 10, max: 50)",
         },
       },
       required: ["target", "property"],
