@@ -1,7 +1,8 @@
 {
   "playwright": {
     "baseURL": "https://example.com",
-    "headless": true
+    "headless": true,
+    "traceOutputPath": "./playwright-trace.zip"
   },
   "hooks": {
     "modulePath": "./hooks.js",

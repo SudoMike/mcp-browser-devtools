@@ -105,6 +105,17 @@ class SessionManager {
       // Ignore close errors
     }
 
+    // Stop tracing if configured
+    if (session.config.playwright.traceOutputPath) {
+      try {
+        await session.context.tracing.stop({
+          path: session.config.playwright.traceOutputPath,
+        });
+      } catch {
+        // Ignore trace stop errors
+      }
+    }
+
     try {
       await session.context.close();
     } catch {
@@ -154,6 +165,14 @@ class SessionManager {
       }
 
       const context = await browser.newContext(contextOptions);
+
+      // Start tracing if configured
+      if (config.playwright.traceOutputPath) {
+        await context.tracing.start({
+          screenshots: true,
+          snapshots: true,
+        });
+      }
 
       // Create page
       const page = await context.newPage();

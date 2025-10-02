@@ -273,6 +273,7 @@ Get the source of a CSS property value, including which rule/file/line set it.
 - `baseURL` (optional): Base URL for relative navigations
 - `headless` (optional, default: `true`): Run browser in headless mode
 - `storageStatePath` (optional): Path to Playwright storage state file (for pre-authenticated sessions)
+- `traceOutputPath` (optional): Path to save Playwright trace file (e.g., `"./trace.zip"`). When set, automatically records all browser interactions, DOM snapshots, network requests, console logs, and screenshots. View traces with: `npx playwright show-trace <trace-file.zip>`
 
 ### `hooks`
 

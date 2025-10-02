@@ -51,6 +51,9 @@ export async function loadConfig(
       storageStatePath: raw.playwright?.storageStatePath
         ? resolve(configDir, raw.playwright.storageStatePath)
         : undefined,
+      traceOutputPath: raw.playwright?.traceOutputPath
+        ? resolve(configDir, raw.playwright.traceOutputPath)
+        : undefined,
     },
     policy: {
       singleInstance: raw.policy?.singleInstance ?? true,

@@ -15,6 +15,7 @@ export interface PlaywrightConfig {
   baseURL?: string;
   headless?: boolean;
   storageStatePath?: string;
+  traceOutputPath?: string;
 }
 
 export interface HooksConfig {
@@ -78,6 +79,7 @@ export interface ResolvedConfig {
     baseURL?: string;
     headless: boolean;
     storageStatePath?: string;
+    traceOutputPath?: string;
   };
   policy: {
     singleInstance: boolean;
