@@ -567,12 +567,9 @@ export async function startAdmin({ page, baseURL }) {
 ## Roadmap
 
 - **v1.1**: Full Styles cascade, pseudo-elements, basic iframe/shadow DOM
-- **v2**: Screenshot attachments, richer accessibility queries, optional Puppeteer adapter
+- **v2**: Richer accessibility queries, optional Puppeteer adapter
 
 ## License
 
-ISC
+MIT
 
-## Contributing
-
-Issues and PRs welcome at [github.com/yourorg/mcp-devtools](https://github.com/yourorg/mcp-devtools)
