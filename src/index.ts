@@ -100,8 +100,7 @@ const tools: Tool[] = [
   },
   {
     name: "devtools.session.stop",
-    description:
-      "Stop the current browser session and clean up all resources.",
+    description: "Stop the current browser session and clean up all resources.",
     inputSchema: {
       type: "object",
       properties: {},
@@ -117,8 +116,7 @@ const tools: Tool[] = [
       properties: {
         url: {
           type: "string",
-          description:
-            "URL to navigate to (absolute or relative to baseURL)",
+          description: "URL to navigate to (absolute or relative to baseURL)",
         },
         wait: {
           type: "string",
@@ -175,7 +173,7 @@ const tools: Tool[] = [
                 type: "string",
               },
               description:
-                'Array of CSS property names to include. ' +
+                "Array of CSS property names to include. " +
                 'Use "ALL_DEFAULTS" to include default high-value properties ' +
                 "(display, position, width, height, margin-*, padding-*, " +
                 "border-*-width, font-*, color, background-color, etc.). " +
@@ -265,7 +263,10 @@ const tools: Tool[] = [
                   options: {
                     type: "object",
                     properties: {
-                      button: { type: "string", enum: ["left", "right", "middle"] },
+                      button: {
+                        type: "string",
+                        enum: ["left", "right", "middle"],
+                      },
                       clickCount: { type: "number" },
                       delay: { type: "number" },
                     },
@@ -387,8 +388,7 @@ const tools: Tool[] = [
       properties: {
         start: {
           type: "number",
-          description:
-            "Starting character position (default: 0)",
+          description: "Starting character position (default: 0)",
         },
         length: {
           type: "number",

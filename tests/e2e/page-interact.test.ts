@@ -41,9 +41,7 @@ describe("Page Interact Tool", () => {
       await navigate({ url: "/interaction-test.html" });
 
       const result = await pageInteract({
-        actions: [
-          { type: "click", selector: "#show-delayed" },
-        ],
+        actions: [{ type: "click", selector: "#show-delayed" }],
       });
 
       expect(result.ok).toBe(true);
@@ -54,15 +52,16 @@ describe("Page Interact Tool", () => {
       await navigate({ url: "/interaction-test.html" });
 
       const result = await pageInteract({
-        actions: [
-          { type: "click", selector: "#non-existent" },
-        ],
+        actions: [{ type: "click", selector: "#non-existent" }],
       });
 
       expect(result.ok).toBe(false);
       expect(result.failedAtIndex).toBe(0);
       expect(result.error).toBeDefined();
-      expect(result.action).toEqual({ type: "click", selector: "#non-existent" });
+      expect(result.action).toEqual({
+        type: "click",
+        selector: "#non-existent",
+      });
     });
   });
 
@@ -118,9 +117,7 @@ describe("Page Interact Tool", () => {
       const startTime = Date.now();
 
       const result = await pageInteract({
-        actions: [
-          { type: "wait", delay: 500 },
-        ],
+        actions: [{ type: "wait", delay: 500 }],
       });
 
       const elapsed = Date.now() - startTime;
@@ -200,7 +197,10 @@ describe("Page Interact Tool", () => {
       expect(result.ok).toBe(false);
       expect(result.failedAtIndex).toBe(1);
       expect(result.error).toBeDefined();
-      expect(result.action).toEqual({ type: "click", selector: "#non-existent" });
+      expect(result.action).toEqual({
+        type: "click",
+        selector: "#non-existent",
+      });
     });
   });
 

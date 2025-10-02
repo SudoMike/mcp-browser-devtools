@@ -151,7 +151,11 @@ describe("CSS Computed Styles", () => {
       const result = await getElement({
         target: { kind: "selector", value: ".background-box" },
         include: {
-          computed: ["ALL_DEFAULTS", "background-repeat", "background-position"],
+          computed: [
+            "ALL_DEFAULTS",
+            "background-repeat",
+            "background-position",
+          ],
         },
       });
 

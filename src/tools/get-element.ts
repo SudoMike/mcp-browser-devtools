@@ -68,7 +68,7 @@ export async function getElement(
 
       if (include.computed) {
         // Expand "ALL_DEFAULTS" and build property list
-        let properties: string[] = [];
+        const properties: string[] = [];
         for (const prop of include.computed) {
           if (prop === "ALL_DEFAULTS") {
             properties.push(...DEFAULT_COMPUTED_PROPERTIES);

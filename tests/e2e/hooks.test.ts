@@ -120,10 +120,10 @@ describe("Hook Execution", () => {
     it("should load scenario descriptions from config", async () => {
       // Verify the config has scenario descriptions
       expect(loadedConfig.hooks?.scenarios?.default?.description).toBe(
-        "Default test scenario for guest users"
+        "Default test scenario for guest users",
       );
       expect(loadedConfig.hooks?.scenarios?.loggedIn?.description).toBe(
-        "Test scenario with authenticated user"
+        "Test scenario with authenticated user",
       );
     });
 
@@ -160,10 +160,10 @@ describe("Hook Execution", () => {
 
       // This should work fine - description is optional
       expect(configWithoutDesc.hooks?.scenarios?.testScenario?.use).toBe(
-        "defaultScenario"
+        "defaultScenario",
       );
       expect(
-        configWithoutDesc.hooks?.scenarios?.testScenario?.description
+        configWithoutDesc.hooks?.scenarios?.testScenario?.description,
       ).toBeUndefined();
     });
   });

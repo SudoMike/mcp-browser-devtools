@@ -1,7 +1,4 @@
-import type {
-  GetPageContentParams,
-  GetPageContentResult,
-} from "../types.js";
+import type { GetPageContentParams, GetPageContentResult } from "../types.js";
 import { ErrorCode, createError } from "../errors.js";
 import { sessionManager } from "../session/manager.js";
 

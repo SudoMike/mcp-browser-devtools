@@ -233,9 +233,15 @@ describe("Element Queries and Multiple Results", () => {
       });
 
       // Each should have different colors
-      expect(first.results[0].computed!["color"]).toMatch(/rgb\(255,\s*0,\s*0\)/); // red
-      expect(second.results[0].computed!["color"]).toMatch(/rgb\(0,\s*0,\s*255\)/); // blue
-      expect(third.results[0].computed!["color"]).toMatch(/rgb\(0,\s*128,\s*0\)/); // green
+      expect(first.results[0].computed!["color"]).toMatch(
+        /rgb\(255,\s*0,\s*0\)/,
+      ); // red
+      expect(second.results[0].computed!["color"]).toMatch(
+        /rgb\(0,\s*0,\s*255\)/,
+      ); // blue
+      expect(third.results[0].computed!["color"]).toMatch(
+        /rgb\(0,\s*128,\s*0\)/,
+      ); // green
     });
   });
 

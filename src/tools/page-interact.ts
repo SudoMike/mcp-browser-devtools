@@ -3,7 +3,8 @@ import type {
   PageInteractResult,
   PageAction,
 } from "../types.js";
-import { ErrorCode, createError, isDevToolsError } from "../errors.js";
+import type { Page } from "playwright";
+import { ErrorCode, createError } from "../errors.js";
 import { sessionManager } from "../session/manager.js";
 
 /**
@@ -46,10 +47,7 @@ export async function pageInteract(
 /**
  * Execute a single page action
  */
-async function executeAction(
-  page: any,
-  action: PageAction,
-): Promise<void> {
+async function executeAction(page: Page, action: PageAction): Promise<void> {
   // Default timeout for actions (5 seconds)
   const DEFAULT_TIMEOUT = 5000;
 
@@ -99,16 +97,15 @@ async function executeAction(
       break;
 
     case "waitForNavigation":
-      await page.waitForLoadState(
-        action.options?.waitUntil || "networkidle",
-        {
-          timeout: action.options?.timeout || DEFAULT_TIMEOUT,
-        },
-      );
+      await page.waitForLoadState(action.options?.waitUntil || "networkidle", {
+        timeout: action.options?.timeout || DEFAULT_TIMEOUT,
+      });
       break;
 
     default:
       // TypeScript should prevent this, but handle it at runtime
-      throw new Error(`Unknown action type: ${(action as any).type}`);
+      throw new Error(
+        `Unknown action type: ${(action as PageAction & { type: string }).type}`,
+      );
   }
 }

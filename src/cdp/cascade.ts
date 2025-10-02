@@ -108,7 +108,9 @@ export async function findWinningDeclaration(
 
   const allDeclarations: Array<{
     property: CDPProperty;
-    rule: CDPRule | { origin: "inline"; style: typeof matchedStyles.inlineStyle };
+    rule:
+      | CDPRule
+      | { origin: "inline"; style: typeof matchedStyles.inlineStyle };
     matchedRule?: unknown;
   }> = [];
 
@@ -183,7 +185,9 @@ export async function findWinningDeclaration(
   );
 
   // Separate by !important
-  const inlineImportant = inlineDeclarations.filter((d) => d.property.important);
+  const inlineImportant = inlineDeclarations.filter(
+    (d) => d.property.important,
+  );
   const stylesheetImportant = stylesheetDeclarations.filter(
     (d) => d.property.important,
   );
