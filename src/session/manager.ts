@@ -1,4 +1,4 @@
-import { chromium } from "playwright";
+import { chromium, devices } from "playwright";
 import type { SessionState, ResolvedConfig } from "../types.js";
 import { ErrorCode, createError } from "../errors.js";
 import { IdleTimer } from "./idle-timer.js";
@@ -148,6 +148,7 @@ class SessionManager {
   async createPlaywrightSession(
     config: ResolvedConfig,
     hookStopFn?: () => void | Promise<void>,
+    deviceName?: string,
   ): Promise<SessionState> {
     try {
       // Launch browser
@@ -157,6 +158,16 @@ class SessionManager {
 
       // Create context
       const contextOptions: Record<string, unknown> = {};
+
+      // Apply device emulation if specified
+      if (deviceName) {
+        const deviceConfig = devices[deviceName];
+        if (!deviceConfig) {
+          throw new Error(`Unknown device: "${deviceName}". See https://github.com/microsoft/playwright/blob/main/packages/playwright-core/src/server/deviceDescriptorsSource.json for available devices.`);
+        }
+        Object.assign(contextOptions, deviceConfig);
+      }
+
       if (config.playwright.baseURL) {
         contextOptions.baseURL = config.playwright.baseURL;
       }

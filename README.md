@@ -43,6 +43,11 @@ npm install playwright
       "loggedIn": {
         "use": "startLoggedIn",
         "description": "Start the app with a logged-in test user on the dashboard"
+      },
+      "mobile": {
+        "use": "startMobile",
+        "description": "Start the app on an iPhone 13 mobile browser",
+        "device": "iPhone 13"
       }
     }
   },
@@ -80,6 +85,17 @@ export async function startLoggedIn({ page, baseURL }) {
   return {
     stop: async () => {
       // Cleanup: stop servers, clean database, etc.
+    }
+  };
+}
+
+export async function startMobile({ page, baseURL }) {
+  // Navigate to homepage (device emulation is already configured)
+  await page.goto(baseURL);
+
+  return {
+    stop: async () => {
+      // Cleanup if needed
     }
   };
 }
@@ -338,6 +354,7 @@ Get the source of a CSS property value, including which rule/file/line set it.
 - `scenarios` (optional): Named scenarios mapping to hook functions
   - Each scenario must have a `use` field specifying the hook function name
   - Each scenario can optionally have a `description` field to help the LLM choose which scenario to use
+  - Each scenario can optionally have a `device` field to specify Playwright device emulation (e.g., `"iPhone 13"`, `"Pixel 7"`, `"iPad Pro 11"`)
   - Example:
     ```json
     "scenarios": {
@@ -348,6 +365,11 @@ Get the source of a CSS property value, including which rule/file/line set it.
       "loggedIn": {
         "use": "startLoggedIn",
         "description": "Start with a logged-in test user on the dashboard"
+      },
+      "mobile": {
+        "use": "startMobile",
+        "description": "Start on an iPhone 13 mobile browser",
+        "device": "iPhone 13"
       }
     }
     ```
@@ -362,6 +384,74 @@ Get the source of a CSS property value, including which rule/file/line set it.
 
 - `navigationMs` (optional, default: `15000`): Navigation timeout
 - `queryMs` (optional, default: `8000`): Query timeout
+
+## Device Emulation
+
+You can configure scenarios to emulate specific mobile devices, tablets, or desktop browsers using Playwright's built-in device registry. This is useful for testing responsive layouts, mobile-specific features, or touch interactions.
+
+### Usage
+
+Add a `device` field to any scenario in your configuration:
+
+```json
+{
+  "hooks": {
+    "modulePath": "./hooks.js",
+    "scenarios": {
+      "mobile": {
+        "use": "startMobile",
+        "description": "iPhone 13 mobile browser",
+        "device": "iPhone 13"
+      },
+      "tablet": {
+        "use": "startTablet",
+        "description": "iPad Pro tablet browser",
+        "device": "iPad Pro 11"
+      }
+    }
+  }
+}
+```
+
+Device emulation automatically configures:
+- **Viewport size** - Screen dimensions
+- **User agent** - Browser identification string
+- **Device scale factor** - Pixel density
+- **Touch support** - Enable touch events
+- **Mobile mode** - Mobile-specific browser behaviors
+
+### Popular Devices
+
+**iPhones:**
+- `iPhone SE`, `iPhone 13`, `iPhone 14`, `iPhone 15` (and Pro/Max/Plus variants)
+
+**iPads:**
+- `iPad (gen 11)`, `iPad Pro 11`, `iPad Mini`
+
+**Android Phones:**
+- `Pixel 4`, `Pixel 5`, `Pixel 6`, `Pixel 7`
+- `Galaxy S24`, `Galaxy A55`
+
+**Android Tablets:**
+- `Galaxy Tab S9`, `Nexus 7`, `Nexus 10`
+
+For the complete list of available devices, see [Playwright's device descriptors](https://github.com/microsoft/playwright/blob/main/packages/playwright-core/src/server/deviceDescriptorsSource.json).
+
+### Example Hook
+
+When using device emulation, your hook receives a page that's already configured for the device:
+
+```javascript
+export async function startMobile({ page, baseURL }) {
+  // Browser is already in iPhone 13 mode
+  await page.goto(baseURL);
+
+  // Touch interactions work automatically
+  await page.tap('.mobile-menu-button');
+
+  return {};
+}
+```
 
 ## Error Codes
 

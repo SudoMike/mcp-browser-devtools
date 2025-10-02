@@ -27,6 +27,7 @@ export interface HooksConfig {
 export interface ScenarioConfig {
   use: string; // Function name to call from hooks module
   description?: string; // Optional description to help LLM choose which scenario to use
+  device?: string; // Optional Playwright device name (e.g., "iPhone 13", "Pixel 7")
 }
 
 export interface PolicyConfig {

@@ -31,15 +31,12 @@ export async function sessionStart(
   sessionManager.markStartInProgress();
 
   try {
-    // Create Playwright session first
-    const session = await sessionManager.createPlaywrightSession(
-      loadedConfig.resolved,
-      undefined,
-    );
+    // Get scenario config if specified
+    let scenarioConfig;
+    let deviceName: string | undefined;
 
-    // Execute scenario hook if configured
     if (params.scenario && loadedConfig.hooks) {
-      const scenarioConfig = loadedConfig.hooks.scenarios?.[params.scenario];
+      scenarioConfig = loadedConfig.hooks.scenarios?.[params.scenario];
 
       if (!scenarioConfig) {
         throw createError(
@@ -52,6 +49,19 @@ export async function sessionStart(
           },
         );
       }
+
+      deviceName = scenarioConfig.device;
+    }
+
+    // Create Playwright session with optional device emulation
+    const session = await sessionManager.createPlaywrightSession(
+      loadedConfig.resolved,
+      undefined,
+      deviceName,
+    );
+
+    // Execute scenario hook if configured
+    if (scenarioConfig && loadedConfig.hooks) {
 
       // Load hooks module
       const hooksModule = await loadHooksModule(loadedConfig.hooks.modulePath);
