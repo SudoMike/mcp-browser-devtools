@@ -153,6 +153,30 @@ Get the raw HTML content from the current page.
 }
 ```
 
+### `devtools.page.screenshot`
+
+Take a screenshot of the current page and save it to a temporary file.
+
+**Parameters:**
+- `fullPage` (optional): Capture the full scrollable page instead of just the viewport (default: false)
+- `type` (optional): Image format - `"png"` or `"jpeg"` (default: "png")
+- `quality` (optional): JPEG quality from 0-100 (only applies to jpeg type, default: 80)
+
+**Example:**
+```json
+{
+  "fullPage": true,
+  "type": "png"
+}
+```
+
+**Response:**
+```json
+{
+  "screenshotPath": "/tmp/mcp-devtools-screenshot-1727832845123.png"
+}
+```
+
 ### `devtools.page.interact`
 
 Execute a sequence of page interactions (click, fill, type, wait, etc.).

@@ -138,6 +138,12 @@ export interface GetPageContentParams {
   length?: number;
 }
 
+export interface ScreenshotParams {
+  fullPage?: boolean;
+  quality?: number;
+  type?: "png" | "jpeg";
+}
+
 export type PageAction =
   | ClickAction
   | FillAction
@@ -273,6 +279,10 @@ export interface PageInteractResult {
 export interface GetPageContentResult {
   html: string;
   fullLength: number;
+}
+
+export interface ScreenshotResult {
+  screenshotPath: string;
 }
 
 export interface CssProvenanceInfo {

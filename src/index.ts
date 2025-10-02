@@ -17,6 +17,7 @@ import type {
   GetCssProvenanceParams,
   PageInteractParams,
   GetPageContentParams,
+  ScreenshotParams,
 } from "./types.js";
 
 import { sessionStart } from "./tools/session-start.js";
@@ -26,6 +27,7 @@ import { getElement } from "./tools/get-element.js";
 import { getCssProvenance } from "./tools/get-css-provenance.js";
 import { pageInteract } from "./tools/page-interact.js";
 import { getPageContent } from "./tools/get-page-content.js";
+import { screenshot } from "./tools/screenshot.js";
 
 // Parse CLI args
 const args = process.argv.slice(2);
@@ -398,6 +400,33 @@ const tools: Tool[] = [
       },
     },
   },
+  {
+    name: "devtools.page.screenshot",
+    description:
+      "Take a screenshot of the current page and save it to a temporary file. " +
+      "Returns the absolute path to the screenshot file. " +
+      "By default, captures only the visible viewport as PNG.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        fullPage: {
+          type: "boolean",
+          description:
+            "Capture the full scrollable page instead of just the viewport (default: false)",
+        },
+        type: {
+          type: "string",
+          enum: ["png", "jpeg"],
+          description: "Image format (default: png)",
+        },
+        quality: {
+          type: "number",
+          description:
+            "JPEG quality from 0-100 (only applies to jpeg type, default: 80)",
+        },
+      },
+    },
+  },
 ];
 
 // Handle list tools
@@ -464,6 +493,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const result = await getPageContent(
           args as unknown as GetPageContentParams,
         );
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case "devtools.page.screenshot": {
+        const result = await screenshot(args as unknown as ScreenshotParams);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
