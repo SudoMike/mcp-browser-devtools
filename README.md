@@ -121,6 +121,30 @@ Navigate the browser to a URL.
 }
 ```
 
+### `devtools.session.getPageContent`
+
+Get the raw HTML content from the current page.
+
+**Parameters:**
+- `start` (optional): Starting character position (default: 0)
+- `length` (optional): Number of characters to return. Use -1 for remainder of HTML after start (default: -1)
+
+**Example:**
+```json
+{
+  "start": 0,
+  "length": 1000
+}
+```
+
+**Response:**
+```json
+{
+  "html": "<!DOCTYPE html><html>...",
+  "fullLength": 15432
+}
+```
+
 ### `devtools.page.interact`
 
 Execute a sequence of page interactions (click, fill, type, wait, etc.).

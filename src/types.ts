@@ -132,6 +132,11 @@ export interface PageInteractParams {
   actions: PageAction[];
 }
 
+export interface GetPageContentParams {
+  start?: number;
+  length?: number;
+}
+
 export type PageAction =
   | ClickAction
   | FillAction
@@ -262,6 +267,11 @@ export interface PageInteractResult {
   failedAtIndex?: number;
   error?: string;
   action?: PageAction;
+}
+
+export interface GetPageContentResult {
+  html: string;
+  fullLength: number;
 }
 
 export interface CssProvenanceInfo {

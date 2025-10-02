@@ -16,6 +16,7 @@ import type {
   GetElementParams,
   GetCssProvenanceParams,
   PageInteractParams,
+  GetPageContentParams,
 } from "./types.js";
 
 import { sessionStart } from "./tools/session-start.js";
@@ -24,6 +25,7 @@ import { navigate } from "./tools/navigate.js";
 import { getElement } from "./tools/get-element.js";
 import { getCssProvenance } from "./tools/get-css-provenance.js";
 import { pageInteract } from "./tools/page-interact.js";
+import { getPageContent } from "./tools/get-page-content.js";
 
 // Parse CLI args
 const args = process.argv.slice(2);
@@ -356,6 +358,28 @@ const tools: Tool[] = [
       required: ["actions"],
     },
   },
+  {
+    name: "devtools.session.getPageContent",
+    description:
+      "Get the raw HTML content from the current page. " +
+      "Optionally specify a starting character position and length to retrieve a slice of the HTML. " +
+      "Always returns the full length of the HTML for context.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        start: {
+          type: "number",
+          description:
+            "Starting character position (default: 0)",
+        },
+        length: {
+          type: "number",
+          description:
+            "Number of characters to return. Use -1 for remainder of HTML after start (default: -1)",
+        },
+      },
+    },
+  },
 ];
 
 // Handle list tools
@@ -412,6 +436,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "devtools.page.interact": {
         const result = await pageInteract(
           args as unknown as PageInteractParams,
+        );
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case "devtools.session.getPageContent": {
+        const result = await getPageContent(
+          args as unknown as GetPageContentParams,
         );
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
