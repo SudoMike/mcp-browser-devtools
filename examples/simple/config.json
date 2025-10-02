@@ -8,10 +8,12 @@
     "modulePath": "./hooks.js",
     "scenarios": {
       "default": {
-        "use": "startDefault"
+        "use": "startDefault",
+        "description": "Start the browser at the homepage as a guest user"
       },
       "loggedIn": {
-        "use": "startLoggedIn"
+        "use": "startLoggedIn",
+        "description": "Start the browser with an authenticated user session"
       }
     }
   },

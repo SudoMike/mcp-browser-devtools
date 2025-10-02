@@ -36,8 +36,14 @@ npm install playwright
   "hooks": {
     "modulePath": "./devtools-hooks.js",
     "scenarios": {
-      "default": { "use": "startDefault" },
-      "loggedIn": { "use": "startLoggedIn" }
+      "default": {
+        "use": "startDefault",
+        "description": "Start the app as a guest user on the homepage"
+      },
+      "loggedIn": {
+        "use": "startLoggedIn",
+        "description": "Start the app with a logged-in test user on the dashboard"
+      }
     }
   },
   "policy": {
@@ -92,7 +98,7 @@ npx mcp-devtools --config mcp-devtools.config.json
 Start a new Playwright browser session.
 
 **Parameters:**
-- `scenario` (optional): Scenario name to run specific hooks
+- `scenario` (required): Scenario name to run specific hooks
 
 **Example:**
 ```json
@@ -100,6 +106,8 @@ Start a new Playwright browser session.
   "scenario": "loggedIn"
 }
 ```
+
+**Note:** The tool description dynamically includes the list of available scenarios from your configuration file, along with their descriptions. This helps the LLM choose the appropriate scenario for the task at hand.
 
 ### `devtools.session.stop`
 
@@ -304,6 +312,21 @@ Get the source of a CSS property value, including which rule/file/line set it.
 - `modulePath` (required): Path to hooks module (relative to config file)
 - `envPath` (optional): Path to .env file (relative to config file)
 - `scenarios` (optional): Named scenarios mapping to hook functions
+  - Each scenario must have a `use` field specifying the hook function name
+  - Each scenario can optionally have a `description` field to help the LLM choose which scenario to use
+  - Example:
+    ```json
+    "scenarios": {
+      "default": {
+        "use": "startDefault",
+        "description": "Start the app as a guest user on the homepage"
+      },
+      "loggedIn": {
+        "use": "startLoggedIn",
+        "description": "Start with a logged-in test user on the dashboard"
+      }
+    }
+    ```
 
 ### `policy`
 

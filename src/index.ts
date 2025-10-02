@@ -60,14 +60,32 @@ const server = new Server(
   },
 );
 
+// Build dynamic description for session.start tool including available scenarios
+let sessionStartDescription =
+  "Start a new Playwright browser session. " +
+  "You must specify a scenario from your config file to run hooks (e.g., logged-in vs guest mode). " +
+  "Only one session can be active at a time.";
+
+if (loadedConfig.hooks?.scenarios) {
+  const scenarioCount = Object.keys(loadedConfig.hooks.scenarios).length;
+  if (scenarioCount > 0) {
+    sessionStartDescription += "\n\nAvailable scenarios:";
+    for (const [name, config] of Object.entries(loadedConfig.hooks.scenarios)) {
+      sessionStartDescription += `\n- ${name}`;
+      if (config.description) {
+        sessionStartDescription += `: ${config.description}`;
+      } else {
+        sessionStartDescription += ` (uses hook: ${config.use})`;
+      }
+    }
+  }
+}
+
 // Define tools
 const tools: Tool[] = [
   {
     name: "devtools.session.start",
-    description:
-      "Start a new Playwright browser session. " +
-      "You must specify a scenario from your config file to run hooks (e.g., logged-in vs guest mode). " +
-      "Only one session can be active at a time.",
+    description: sessionStartDescription,
     inputSchema: {
       type: "object",
       properties: {

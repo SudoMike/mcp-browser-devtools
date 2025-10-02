@@ -26,6 +26,7 @@ export interface HooksConfig {
 
 export interface ScenarioConfig {
   use: string; // Function name to call from hooks module
+  description?: string; // Optional description to help LLM choose which scenario to use
 }
 
 export interface PolicyConfig {

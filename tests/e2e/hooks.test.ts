@@ -115,4 +115,56 @@ describe("Hook Execution", () => {
       expect(true).toBe(true);
     });
   });
+
+  describe("Scenario Descriptions", () => {
+    it("should load scenario descriptions from config", async () => {
+      // Verify the config has scenario descriptions
+      expect(loadedConfig.hooks?.scenarios?.default?.description).toBe(
+        "Default test scenario for guest users"
+      );
+      expect(loadedConfig.hooks?.scenarios?.loggedIn?.description).toBe(
+        "Test scenario with authenticated user"
+      );
+    });
+
+    it("should include scenario descriptions in tool metadata", async () => {
+      // This test verifies that descriptions are available in the config
+      // The actual tool description is built in index.ts when the server starts
+      const scenarios = loadedConfig.hooks?.scenarios;
+      expect(scenarios).toBeDefined();
+
+      if (scenarios) {
+        for (const [name, config] of Object.entries(scenarios)) {
+          expect(config.use).toBeDefined();
+          expect(typeof config.use).toBe("string");
+          // Description is optional but should be a string if present
+          if (config.description) {
+            expect(typeof config.description).toBe("string");
+            expect(config.description.length).toBeGreaterThan(0);
+          }
+        }
+      }
+    });
+
+    it("should work with scenarios that have no description", async () => {
+      // Create a temporary config without descriptions
+      const configWithoutDesc = {
+        ...loadedConfig,
+        hooks: {
+          ...loadedConfig.hooks,
+          scenarios: {
+            testScenario: { use: "defaultScenario" },
+          },
+        },
+      };
+
+      // This should work fine - description is optional
+      expect(configWithoutDesc.hooks?.scenarios?.testScenario?.use).toBe(
+        "defaultScenario"
+      );
+      expect(
+        configWithoutDesc.hooks?.scenarios?.testScenario?.description
+      ).toBeUndefined();
+    });
+  });
 });

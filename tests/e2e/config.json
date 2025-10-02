@@ -6,8 +6,14 @@
   "hooks": {
     "modulePath": "./fixtures/test-hooks.ts",
     "scenarios": {
-      "default": { "use": "defaultScenario" },
-      "loggedIn": { "use": "testLogin" }
+      "default": {
+        "use": "defaultScenario",
+        "description": "Default test scenario for guest users"
+      },
+      "loggedIn": {
+        "use": "testLogin",
+        "description": "Test scenario with authenticated user"
+      }
     }
   },
   "policy": {
