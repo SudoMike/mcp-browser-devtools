@@ -62,7 +62,6 @@ export async function sessionStart(
 
     // Execute scenario hook if configured
     if (scenarioConfig && loadedConfig.hooks) {
-
       // Load hooks module
       const hooksModule = await loadHooksModule(loadedConfig.hooks.modulePath);
 

@@ -163,7 +163,9 @@ class SessionManager {
       if (deviceName) {
         const deviceConfig = devices[deviceName];
         if (!deviceConfig) {
-          throw new Error(`Unknown device: "${deviceName}". See https://github.com/microsoft/playwright/blob/main/packages/playwright-core/src/server/deviceDescriptorsSource.json for available devices.`);
+          throw new Error(
+            `Unknown device: "${deviceName}". See https://github.com/microsoft/playwright/blob/main/packages/playwright-core/src/server/deviceDescriptorsSource.json for available devices.`,
+          );
         }
         Object.assign(contextOptions, deviceConfig);
       }

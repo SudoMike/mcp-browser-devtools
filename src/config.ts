@@ -13,7 +13,10 @@ export interface LoadedConfig {
   configDir: string;
   hooks?: {
     modulePath: string;
-    scenarios?: Record<string, { use: string; description?: string }>;
+    scenarios?: Record<
+      string,
+      { use: string; description?: string; device?: string }
+    >;
   };
   allowedOrigins?: string[];
 }
