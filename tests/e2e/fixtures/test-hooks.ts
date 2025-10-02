@@ -54,3 +54,19 @@ export async function testLogin(context: HookContext): Promise<HookResult> {
     },
   };
 }
+
+export async function deviceTest(context: HookContext): Promise<HookResult> {
+  hookCallCount++;
+  lastHookContext = context;
+
+  // Navigate to device info page
+  if (context.page && context.baseURL) {
+    await context.page.goto(context.baseURL + "/device-info.html");
+  }
+
+  return {
+    stop: async () => {
+      // Cleanup
+    },
+  };
+}

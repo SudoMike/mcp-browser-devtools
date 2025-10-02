@@ -13,6 +13,21 @@
       "loggedIn": {
         "use": "testLogin",
         "description": "Test scenario with authenticated user"
+      },
+      "iphone": {
+        "use": "deviceTest",
+        "description": "iPhone 13 device emulation",
+        "device": "iPhone 13"
+      },
+      "ipad": {
+        "use": "deviceTest",
+        "description": "iPad Pro 11 device emulation",
+        "device": "iPad Pro 11"
+      },
+      "pixel": {
+        "use": "deviceTest",
+        "description": "Pixel 7 device emulation",
+        "device": "Pixel 7"
       }
     }
   },

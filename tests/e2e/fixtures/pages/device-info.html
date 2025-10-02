@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Device Info Test</title>
+</head>
+<body>
+  <h1>Device Information</h1>
+  <div id="viewport-width" data-value=""></div>
+  <div id="viewport-height" data-value=""></div>
+  <div id="user-agent" data-value=""></div>
+
+  <script>
+    // Expose viewport dimensions and user agent in data attributes
+    document.getElementById('viewport-width').setAttribute('data-value', window.innerWidth.toString());
+    document.getElementById('viewport-height').setAttribute('data-value', window.innerHeight.toString());
+    document.getElementById('user-agent').setAttribute('data-value', navigator.userAgent);
+  </script>
+</body>
+</html>
