@@ -1,11 +1,11 @@
 {
-  "name": "mcp-devtools",
+  "name": "mcp-browser-devtools",
   "version": "1.0.0",
   "type": "module",
   "description": "MCP server for DevTools-style browser inspection via Playwright",
   "main": "dist/index.js",
   "bin": {
-    "mcp-devtools": "dist/index.js"
+    "mcp-browser-devtools": "dist/index.js"
   },
   "files": [
     "dist"

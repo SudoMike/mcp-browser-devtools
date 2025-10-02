@@ -17,7 +17,7 @@ export async function screenshot(
     // Generate temp file path
     const timestamp = Date.now();
     const extension = params.type === "jpeg" ? "jpg" : "png";
-    const filename = `mcp-devtools-screenshot-${timestamp}.${extension}`;
+    const filename = `mcp-browser-devtools-screenshot-${timestamp}.${extension}`;
     const screenshotPath = join(tmpdir(), filename);
 
     // Take screenshot

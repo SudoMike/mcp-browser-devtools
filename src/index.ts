@@ -34,7 +34,7 @@ const args = process.argv.slice(2);
 const configPathIndex = args.indexOf("--config");
 
 if (configPathIndex === -1 || !args[configPathIndex + 1]) {
-  console.error("Usage: mcp-devtools --config <path-to-config.json>");
+  console.error("Usage: mcp-browser-devtools --config <path-to-config.json>");
   process.exit(1);
 }
 
@@ -52,7 +52,7 @@ try {
 // Create MCP server
 const server = new Server(
   {
-    name: "mcp-devtools",
+    name: "mcp-browser-devtools",
     version: "1.0.0",
   },
   {

@@ -54,7 +54,7 @@ export async function startLoggedIn({ page, baseURL }) {
 ### Start MCP Server
 
 ```bash
-npx mcp-devtools --config examples/simple/my-config.json
+npx mcp-browser-devtools --config examples/simple/my-config.json
 ```
 
 The server will run on stdio and communicate via MCP protocol.

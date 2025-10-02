@@ -14,7 +14,7 @@ An MCP (Model Context Protocol) server that provides DevTools-style browser insp
 ## Installation
 
 ```bash
-npm install mcp-devtools
+npm install mcp-browser-devtools
 ```
 
 **Note**: This package has a peer dependency on `playwright`. Make sure Playwright is installed in your project:
@@ -25,7 +25,7 @@ npm install playwright
 
 ## Quick Start
 
-1. **Create a configuration file** (`mcp-devtools.config.json`):
+1. **Create a configuration file** (`mcp-browser-devtools.config.json`):
 
 ```json
 {
@@ -104,7 +104,7 @@ export async function startMobile({ page, baseURL }) {
 3. **Run the MCP server**:
 
 ```bash
-npx mcp-devtools --config mcp-devtools.config.json
+npx mcp-browser-devtools --config mcp-browser-devtools.config.json
 ```
 
 ## MCP Tools
@@ -189,7 +189,7 @@ Take a screenshot of the current page and save it to a temporary file.
 **Response:**
 ```json
 {
-  "screenshotPath": "/tmp/mcp-devtools-screenshot-1727832845123.png"
+  "screenshotPath": "/tmp/mcp-browser-devtools-screenshot-1727832845123.png"
 }
 ```
 
