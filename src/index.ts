@@ -64,7 +64,7 @@ const tools: Tool[] = [
     name: "devtools.session.start",
     description:
       "Start a new Playwright browser session. " +
-      "Optionally specify a scenario to run hooks (e.g., logged-in vs guest mode). " +
+      "You must specify a scenario from your config file to run hooks (e.g., logged-in vs guest mode). " +
       "Only one session can be active at a time.",
     inputSchema: {
       type: "object",
@@ -72,7 +72,7 @@ const tools: Tool[] = [
         scenario: {
           type: "string",
           description:
-            "Optional scenario name to run specific hooks " +
+            "Required scenario name to run specific hooks " +
             "(must be defined in config)",
         },
       },
