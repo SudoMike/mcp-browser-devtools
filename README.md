@@ -25,6 +25,33 @@ npm install playwright
 
 ## Quick Start
 
+### Config-Free Mode (Simplest)
+
+For quick browser automation without any setup:
+
+```bash
+npx mcp-browser-devtools
+```
+
+Then use the MCP tool to start a browser:
+
+```json
+{
+  "tool": "devtools.session.start",
+  "arguments": {
+    "interactive": true
+  }
+}
+```
+
+This opens a visible browser with a blank page. You can manually navigate anywhere, then use other MCP tools to inspect or interact with the page. Optionally include `"url": "https://example.com"` to navigate automatically.
+
+No configuration file or hooks needed! Perfect for one-off tasks or when you don't have an existing project setup.
+
+### Config-Based Mode (For Projects)
+
+For project-specific scenarios with custom hooks:
+
 1. **Create a configuration file** (`mcp-browser-devtools.config.json`):
 
 ```json
@@ -114,25 +141,43 @@ npx mcp-browser-devtools --config mcp-browser-devtools.config.json
 Start a new Playwright browser session.
 
 **Parameters:**
-- `scenario` (required): Scenario name to run specific hooks
+- `scenario` (optional): Scenario name to run specific hooks (requires config file with scenarios)
 - `interactive` (optional): Launch browser in headed mode (visible window) for manual user interaction (default: false)
+- `url` (optional): URL to navigate to after launching browser
 
-**Example:**
+**Config-Free Mode Examples:**
 ```json
+// Launch headed browser and navigate to URL
 {
-  "scenario": "loggedIn"
+  "interactive": true,
+  "url": "https://example.com"
 }
-```
 
-**Interactive Mode Example:**
-```json
+// Launch headed browser with blank page (user navigates manually)
 {
-  "scenario": "default",
   "interactive": true
 }
+
+// Launch headless browser at URL
+{
+  "url": "https://example.com"
+}
 ```
 
-**Note:** The tool description dynamically includes the list of available scenarios from your configuration file, along with their descriptions. This helps the LLM choose the appropriate scenario for the task at hand.
+**Config-Based Mode Example:**
+```json
+{
+  "scenario": "loggedIn",
+  "interactive": false
+}
+```
+
+**Note:**
+- When no `scenario` is specified, the browser launches directly without running hooks (config-free mode)
+- The `url` parameter is completely optional - omit it to start with a blank browser
+- When a `scenario` is specified, a config file with scenarios is required
+- Starting a new session automatically stops any previously active session
+- The tool description dynamically includes available scenarios when a config file is loaded
 
 ### Interactive/Headed Mode
 
@@ -146,19 +191,35 @@ By default, the browser runs in headless mode (invisible). Setting `interactive:
 
 **Workflow:**
 1. Start a session with `interactive: true`
-2. The browser window opens visibly and runs your scenario hook
+2. The browser window opens visibly (and runs your scenario hook if provided)
 3. Manually interact with the browser (navigate, login, fill forms, etc.)
 4. Tell the LLM to use any MCP tools on the current browser state
 5. Continue alternating between manual interaction and automated operations as needed
 
-**Example:**
+**Config-Free Examples:**
+```
+Example 1: Open blank browser, user navigates manually
+User: "Start a headed browser"
+LLM: Calls devtools.session.start with { interactive: true }
+[Browser window opens with blank page]
+User: [Manually navigates to GitHub and logs in]
+User: "Get the computed styles for the .header element"
+LLM: Calls devtools.getElement on current page
+
+Example 2: Open browser at specific URL
+User: "Start a headed browser at https://github.com"
+LLM: Calls devtools.session.start with { interactive: true, url: "https://github.com" }
+[Browser window opens at GitHub]
+User: [Manually logs in]
+User: "Click the profile button"
+LLM: Calls devtools.page.interact to click the button
+```
+
+**Config-Based Example:**
 ```
 User: "Start an interactive browser session with the default scenario"
 LLM: Calls devtools.session.start with { scenario: "default", interactive: true }
-[Browser window opens visibly]
-User: [Manually navigates to dashboard, logs in with 2FA]
-User: "Get the computed styles for the .header element"
-LLM: Calls devtools.getElement on current page
+[Browser window opens visibly and runs your scenario hook]
 User: "Click the profile button"
 LLM: Calls devtools.page.interact to click the button
 ```

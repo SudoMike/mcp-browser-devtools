@@ -33,20 +33,16 @@ import { screenshot } from "./tools/screenshot.js";
 const args = process.argv.slice(2);
 const configPathIndex = args.indexOf("--config");
 
-if (configPathIndex === -1 || !args[configPathIndex + 1]) {
-  console.error("Usage: mcp-browser-devtools --config <path-to-config.json>");
-  process.exit(1);
-}
-
-const configPath = args[configPathIndex + 1];
-
-// Load config
-let loadedConfig: LoadedConfig;
-try {
-  loadedConfig = await loadConfig({ configPath });
-} catch (err) {
-  console.error(`Failed to load config: ${err}`);
-  process.exit(1);
+// Load config (optional)
+let loadedConfig: LoadedConfig | null = null;
+if (configPathIndex !== -1 && args[configPathIndex + 1]) {
+  const configPath = args[configPathIndex + 1];
+  try {
+    loadedConfig = await loadConfig({ configPath });
+  } catch (err) {
+    console.error(`Failed to load config: ${err}`);
+    process.exit(1);
+  }
 }
 
 // Create MCP server
@@ -65,14 +61,15 @@ const server = new Server(
 // Build dynamic description for session.start tool including available scenarios
 let sessionStartDescription =
   "Start a new Playwright browser session. " +
-  "You must specify a scenario from your config file to run hooks (e.g., logged-in vs guest mode). " +
   "Only one session can be active at a time. " +
   "Set interactive=true to launch a visible browser window that the user can manually interact with " +
   "before/during automated operations (useful for manual login, debugging, or complex workflows).";
 
-if (loadedConfig.hooks?.scenarios) {
+if (loadedConfig?.hooks?.scenarios) {
   const scenarioCount = Object.keys(loadedConfig.hooks.scenarios).length;
   if (scenarioCount > 0) {
+    sessionStartDescription +=
+      "\n\nYou can specify a scenario from the config file to run hooks (e.g., logged-in vs guest mode).";
     sessionStartDescription += "\n\nAvailable scenarios:";
     for (const [name, config] of Object.entries(loadedConfig.hooks.scenarios)) {
       sessionStartDescription += `\n- ${name}`;
@@ -83,6 +80,9 @@ if (loadedConfig.hooks?.scenarios) {
       }
     }
   }
+} else {
+  sessionStartDescription +=
+    "\n\nNo config file loaded. The browser will launch without running any hooks or scenarios.";
 }
 
 // Define tools
@@ -96,8 +96,9 @@ const tools: Tool[] = [
         scenario: {
           type: "string",
           description:
-            "Required scenario name to run specific hooks " +
-            "(must be defined in config)",
+            "Optional scenario name to run specific hooks " +
+            "(must be defined in config if provided). " +
+            "If not specified, browser launches without hooks.",
         },
         interactive: {
           type: "boolean",
@@ -105,6 +106,12 @@ const tools: Tool[] = [
             "Launch browser in headed mode (visible window) for manual user interaction. " +
             "After starting, user can manually navigate, login, or perform any actions " +
             "before using other MCP tools on the current browser state. (default: false)",
+        },
+        url: {
+          type: "string",
+          description:
+            "Optional URL to navigate to after launching browser. " +
+            "Can be absolute or relative to baseURL if configured.",
         },
       },
     },

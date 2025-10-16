@@ -9,16 +9,8 @@ import { loadHooksModule, executeHook } from "../session/hooks.js";
  */
 export async function sessionStart(
   params: SessionStartParams,
-  loadedConfig: LoadedConfig,
+  loadedConfig: LoadedConfig | null,
 ): Promise<SessionStartResult> {
-  // Check if session already exists
-  if (sessionManager.hasSession()) {
-    throw createError(
-      ErrorCode.ALREADY_STARTED,
-      "Session is already active. Call devtools.session.stop first.",
-    );
-  }
-
   // Check if start is in progress
   if (sessionManager.isStarting()) {
     throw createError(
@@ -35,7 +27,14 @@ export async function sessionStart(
     let scenarioConfig;
     let deviceName: string | undefined;
 
-    if (params.scenario && loadedConfig.hooks) {
+    if (params.scenario) {
+      if (!loadedConfig?.hooks) {
+        throw createError(
+          ErrorCode.HOOKS_START_FAILED,
+          "Scenario specified but no config file loaded. Start server with --config flag to use scenarios.",
+        );
+      }
+
       scenarioConfig = loadedConfig.hooks.scenarios?.[params.scenario];
 
       if (!scenarioConfig) {
@@ -53,8 +52,28 @@ export async function sessionStart(
       deviceName = scenarioConfig.device;
     }
 
+    // Build resolved config from loaded config or use defaults
+    const resolvedConfig = loadedConfig
+      ? { ...loadedConfig.resolved }
+      : {
+          playwright: {
+            baseURL: undefined,
+            headless: true,
+            storageStatePath: undefined,
+            traceOutputPath: undefined,
+          },
+          policy: {
+            singleInstance: true,
+            idleMs: 300_000,
+            allowedOrigins: undefined,
+          },
+          timeouts: {
+            navigationMs: 15_000,
+            queryMs: 8_000,
+          },
+        };
+
     // Override headless setting if interactive mode is requested
-    const resolvedConfig = { ...loadedConfig.resolved };
     if (params.interactive) {
       resolvedConfig.playwright = {
         ...resolvedConfig.playwright,
@@ -70,14 +89,14 @@ export async function sessionStart(
     );
 
     // Execute scenario hook if configured
-    if (scenarioConfig && loadedConfig.hooks) {
+    if (scenarioConfig && loadedConfig?.hooks) {
       // Load hooks module
       const hooksModule = await loadHooksModule(loadedConfig.hooks.modulePath);
 
       // Execute hook once with page available
       const hookContext = {
         page: session.page,
-        baseURL: loadedConfig.resolved.playwright.baseURL,
+        baseURL: resolvedConfig.playwright.baseURL,
       };
 
       const result = await executeHook(
@@ -94,6 +113,20 @@ export async function sessionStart(
 
     // Set session as active (this also clears startInProgress flag)
     sessionManager.setSession(session);
+
+    // Navigate to URL if provided
+    if (params.url) {
+      try {
+        await session.page.goto(params.url, {
+          waitUntil: "networkidle",
+          timeout: resolvedConfig.timeouts.navigationMs,
+        });
+      } catch (err) {
+        // Don't fail the session start if navigation fails
+        // User can manually navigate or use the navigate tool
+        console.error(`Warning: Failed to navigate to ${params.url}: ${err}`);
+      }
+    }
 
     return { ok: true };
   } catch (err) {

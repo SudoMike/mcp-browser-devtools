@@ -144,12 +144,17 @@ class SessionManager {
 
   /**
    * Create a new Playwright session
+   * Automatically stops any existing session first
    */
   async createPlaywrightSession(
     config: ResolvedConfig,
     hookStopFn?: () => void | Promise<void>,
     deviceName?: string,
   ): Promise<SessionState> {
+    // Stop existing session if present
+    if (this.hasSession()) {
+      await this.stop();
+    }
     try {
       // Launch browser
       const browser = await chromium.launch({
