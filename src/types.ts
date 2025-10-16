@@ -169,6 +169,7 @@ export interface ScreenshotParams {
 export interface EvaluateJavaScriptParams {
   code: string;
   timeout?: number;
+  saveToFile?: boolean;
 }
 
 export interface GetConsoleLogsParams {
@@ -319,7 +320,9 @@ export interface ScreenshotResult {
 }
 
 export interface EvaluateJavaScriptResult {
-  result: unknown;
+  result?: unknown;
+  resultPath?: string;
+  resultSize?: number;
   ok: boolean;
 }
 

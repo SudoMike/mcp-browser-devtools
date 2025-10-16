@@ -461,7 +461,8 @@ const tools: Tool[] = [
       "Useful for extracting data, parsing page content, accessing application state, " +
       "or performing complex DOM queries that aren't easily done with selectors. " +
       "The return value must be JSON-serializable (primitives, objects, arrays). " +
-      "Cannot return DOM elements, functions, or non-serializable objects.",
+      "Cannot return DOM elements, functions, or non-serializable objects. " +
+      "For large data outputs, use saveToFile=true to write results to a temporary file instead of returning them directly.",
     inputSchema: {
       type: "object",
       properties: {
@@ -476,6 +477,13 @@ const tools: Tool[] = [
         timeout: {
           type: "number",
           description: "Optional timeout in milliseconds (default: 30000)",
+        },
+        saveToFile: {
+          type: "boolean",
+          description:
+            "Save the result to a temporary JSON file instead of returning it directly. " +
+            "Useful for large data outputs (e.g., large JSON objects or arrays). " +
+            "When true, returns the file path and size instead of the result data. (default: false)",
         },
       },
       required: ["code"],
