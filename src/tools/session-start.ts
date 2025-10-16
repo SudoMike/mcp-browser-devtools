@@ -53,9 +53,18 @@ export async function sessionStart(
       deviceName = scenarioConfig.device;
     }
 
+    // Override headless setting if interactive mode is requested
+    const resolvedConfig = { ...loadedConfig.resolved };
+    if (params.interactive) {
+      resolvedConfig.playwright = {
+        ...resolvedConfig.playwright,
+        headless: false,
+      };
+    }
+
     // Create Playwright session with optional device emulation
     const session = await sessionManager.createPlaywrightSession(
-      loadedConfig.resolved,
+      resolvedConfig,
       undefined,
       deviceName,
     );

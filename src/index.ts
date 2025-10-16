@@ -66,7 +66,9 @@ const server = new Server(
 let sessionStartDescription =
   "Start a new Playwright browser session. " +
   "You must specify a scenario from your config file to run hooks (e.g., logged-in vs guest mode). " +
-  "Only one session can be active at a time.";
+  "Only one session can be active at a time. " +
+  "Set interactive=true to launch a visible browser window that the user can manually interact with " +
+  "before/during automated operations (useful for manual login, debugging, or complex workflows).";
 
 if (loadedConfig.hooks?.scenarios) {
   const scenarioCount = Object.keys(loadedConfig.hooks.scenarios).length;
@@ -96,6 +98,13 @@ const tools: Tool[] = [
           description:
             "Required scenario name to run specific hooks " +
             "(must be defined in config)",
+        },
+        interactive: {
+          type: "boolean",
+          description:
+            "Launch browser in headed mode (visible window) for manual user interaction. " +
+            "After starting, user can manually navigate, login, or perform any actions " +
+            "before using other MCP tools on the current browser state. (default: false)",
         },
       },
     },

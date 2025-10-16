@@ -115,6 +115,7 @@ Start a new Playwright browser session.
 
 **Parameters:**
 - `scenario` (required): Scenario name to run specific hooks
+- `interactive` (optional): Launch browser in headed mode (visible window) for manual user interaction (default: false)
 
 **Example:**
 ```json
@@ -123,7 +124,44 @@ Start a new Playwright browser session.
 }
 ```
 
+**Interactive Mode Example:**
+```json
+{
+  "scenario": "default",
+  "interactive": true
+}
+```
+
 **Note:** The tool description dynamically includes the list of available scenarios from your configuration file, along with their descriptions. This helps the LLM choose the appropriate scenario for the task at hand.
+
+### Interactive/Headed Mode
+
+By default, the browser runs in headless mode (invisible). Setting `interactive: true` launches a visible browser window that you can interact with manually before, during, or between automated operations.
+
+**Use Cases:**
+- **Complex authentication**: Manually handle OAuth flows, 2FA, CAPTCHAs
+- **Debugging**: Watch the browser execute actions in real-time
+- **Hybrid workflows**: Manually navigate to a specific state, then use MCP tools for inspection/automation
+- **Visual verification**: See exactly what the automated tools are working with
+
+**Workflow:**
+1. Start a session with `interactive: true`
+2. The browser window opens visibly and runs your scenario hook
+3. Manually interact with the browser (navigate, login, fill forms, etc.)
+4. Tell the LLM to use any MCP tools on the current browser state
+5. Continue alternating between manual interaction and automated operations as needed
+
+**Example:**
+```
+User: "Start an interactive browser session with the default scenario"
+LLM: Calls devtools.session.start with { scenario: "default", interactive: true }
+[Browser window opens visibly]
+User: [Manually navigates to dashboard, logs in with 2FA]
+User: "Get the computed styles for the .header element"
+LLM: Calls devtools.getElement on current page
+User: "Click the profile button"
+LLM: Calls devtools.page.interact to click the button
+```
 
 ### `devtools.session.stop`
 

@@ -100,6 +100,7 @@ export interface ResolvedConfig {
 
 export interface SessionStartParams {
   scenario?: string;
+  interactive?: boolean;
 }
 
 export interface NavigateParams {
