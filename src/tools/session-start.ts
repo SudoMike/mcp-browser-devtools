@@ -86,6 +86,7 @@ export async function sessionStart(
       resolvedConfig,
       undefined,
       deviceName,
+      params.fullscreen,
     );
 
     // Execute scenario hook if configured

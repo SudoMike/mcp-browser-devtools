@@ -150,6 +150,7 @@ class SessionManager {
     config: ResolvedConfig,
     hookStopFn?: () => void | Promise<void>,
     deviceName?: string,
+    fullscreen?: boolean,
   ): Promise<SessionState> {
     // Stop existing session if present
     if (this.hasSession()) {
@@ -157,9 +158,16 @@ class SessionManager {
     }
     try {
       // Launch browser
-      const browser = await chromium.launch({
+      const launchOptions: Record<string, unknown> = {
         headless: config.playwright.headless,
-      });
+      };
+
+      // Add fullscreen args if requested
+      if (fullscreen && !config.playwright.headless) {
+        launchOptions.args = ["--start-fullscreen"];
+      }
+
+      const browser = await chromium.launch(launchOptions);
 
       // Create context
       const contextOptions: Record<string, unknown> = {};

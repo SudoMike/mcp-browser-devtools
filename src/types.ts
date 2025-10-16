@@ -101,6 +101,7 @@ export interface ResolvedConfig {
 export interface SessionStartParams {
   scenario?: string;
   interactive?: boolean;
+  fullscreen?: boolean;
   url?: string;
 }
 

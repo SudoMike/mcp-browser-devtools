@@ -109,6 +109,12 @@ const tools: Tool[] = [
             "After starting, user can manually navigate, login, or perform any actions " +
             "before using other MCP tools on the current browser state. (default: false)",
         },
+        fullscreen: {
+          type: "boolean",
+          description:
+            "Launch browser in fullscreen mode. Only effective when interactive=true. " +
+            "Opens the browser window in fullscreen, useful for presentations or immersive sessions. (default: false)",
+        },
         url: {
           type: "string",
           description:
