@@ -335,6 +335,46 @@ Execute a sequence of page interactions (click, fill, type, wait, etc.).
 - Success: `{"ok": true}`
 - Failure: `{"ok": false, "failedAtIndex": 1, "error": "...", "action": {...}}`
 
+### `devtools.page.evaluateJavaScript`
+
+Execute arbitrary JavaScript code in the browser context and return the result. The code can include functions, async operations, loops, and complex logic. This is useful for extracting data, parsing page content, accessing application state, or performing complex DOM queries that aren't easily done with selectors.
+
+**Parameters:**
+- `code` (required): JavaScript code to execute in the browser context
+- `timeout` (optional): Timeout in milliseconds (default: 30000)
+
+**Return Value:**
+The return value must be JSON-serializable (primitives, objects, arrays). Cannot return DOM elements, functions, or non-serializable objects.
+
+**Example 1: Extract all link URLs**
+```json
+{
+  "code": "const links = document.querySelectorAll('a[href]'); return Array.from(links).map(a => ({ text: a.textContent.trim(), url: a.href }));"
+}
+```
+
+**Example 2: Parse product data with helper functions**
+```json
+{
+  "code": "function parsePrice(text) { return parseFloat(text.replace(/[^0-9.]/g, '')); } function extractProduct(el) { return { name: el.querySelector('.name')?.textContent, price: parsePrice(el.querySelector('.price')?.textContent || '0'), inStock: !el.classList.contains('out-of-stock') }; } const products = document.querySelectorAll('.product-card'); return Array.from(products).map(extractProduct);"
+}
+```
+
+**Example 3: Aggregate table data**
+```json
+{
+  "code": "const table = document.querySelector('table'); const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent); const rows = Array.from(table.querySelectorAll('tbody tr')); return rows.map(row => { const cells = row.querySelectorAll('td'); return headers.reduce((obj, header, i) => { obj[header] = cells[i]?.textContent; return obj; }, {}); });"
+}
+```
+
+**Response:**
+```json
+{
+  "result": [/* your data here */],
+  "ok": true
+}
+```
+
 ### `devtools.getElement`
 
 Get detailed information about elements matching a selector or ID.
@@ -577,6 +617,7 @@ Error codes:
 - `ELEMENT_NOT_FOUND`: No matching elements
 - `CSS_DOMAIN_UNAVAILABLE`: CDP CSS domain unavailable
 - `QUERY_TIMEOUT`: Query timed out
+- `JS_EXECUTION_ERROR`: JavaScript execution failed
 - `UNEXPECTED_ERROR`: Unexpected error
 
 ## Examples

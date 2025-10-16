@@ -147,6 +147,11 @@ export interface ScreenshotParams {
   type?: "png" | "jpeg";
 }
 
+export interface EvaluateJavaScriptParams {
+  code: string;
+  timeout?: number;
+}
+
 export type PageAction =
   | ClickAction
   | FillAction
@@ -286,6 +291,11 @@ export interface GetPageContentResult {
 
 export interface ScreenshotResult {
   screenshotPath: string;
+}
+
+export interface EvaluateJavaScriptResult {
+  result: unknown;
+  ok: boolean;
 }
 
 export interface CssProvenanceInfo {

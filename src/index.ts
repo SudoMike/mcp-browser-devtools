@@ -18,6 +18,7 @@ import type {
   PageInteractParams,
   GetPageContentParams,
   ScreenshotParams,
+  EvaluateJavaScriptParams,
 } from "./types.js";
 
 import { sessionStart } from "./tools/session-start.js";
@@ -28,6 +29,7 @@ import { getCssProvenance } from "./tools/get-css-provenance.js";
 import { pageInteract } from "./tools/page-interact.js";
 import { getPageContent } from "./tools/get-page-content.js";
 import { screenshot } from "./tools/screenshot.js";
+import { evaluateJavaScript } from "./tools/evaluate-javascript.js";
 
 // Parse CLI args
 const args = process.argv.slice(2);
@@ -443,6 +445,34 @@ const tools: Tool[] = [
       },
     },
   },
+  {
+    name: "devtools.page.evaluateJavaScript",
+    description:
+      "Execute arbitrary JavaScript code in the browser context and return the result. " +
+      "The code can include functions, async operations, loops, and complex logic. " +
+      "Useful for extracting data, parsing page content, accessing application state, " +
+      "or performing complex DOM queries that aren't easily done with selectors. " +
+      "The return value must be JSON-serializable (primitives, objects, arrays). " +
+      "Cannot return DOM elements, functions, or non-serializable objects.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        code: {
+          type: "string",
+          description:
+            "JavaScript code to execute in the browser. " +
+            "The code is executed in the page context with access to DOM, window, and all browser APIs. " +
+            "Can define and call functions, use async/await, and return data. " +
+            "Example: 'return document.querySelectorAll(\"a\").length'",
+        },
+        timeout: {
+          type: "number",
+          description: "Optional timeout in milliseconds (default: 30000)",
+        },
+      },
+      required: ["code"],
+    },
+  },
 ];
 
 // Handle list tools
@@ -516,6 +546,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case "devtools.page.screenshot": {
         const result = await screenshot(args as unknown as ScreenshotParams);
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case "devtools.page.evaluateJavaScript": {
+        const result = await evaluateJavaScript(
+          args as unknown as EvaluateJavaScriptParams,
+        );
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
