@@ -8,6 +8,7 @@ An MCP (Model Context Protocol) server that provides DevTools-style browser insp
 - **Project-agnostic**: Configure via hooks module - no hard-coded app knowledge
 - **CSS provenance**: Trace computed styles to their source (file, line, selector, !important)
 - **Element inspection**: Get box model, attributes, computed styles, and ARIA roles
+- **Console capture**: Automatic capture of all browser console output with memory-safe circular buffer
 - **Scenario-based hooks**: Support different startup modes (guest, logged-in, etc.)
 - **Security**: Origin allowlists, idle timeouts, no exposed debugging ports
 
@@ -375,6 +376,69 @@ The return value must be JSON-serializable (primitives, objects, arrays). Cannot
 }
 ```
 
+### `devtools.console.getLogs`
+
+Get console messages captured from the browser. The server automatically captures all console output (log, warn, error, info, debug) when a session is active. Messages are stored in a circular buffer, so when the limit is reached, the oldest messages are automatically dropped.
+
+**Parameters:**
+- `level` (optional): Filter by log level - `"log"`, `"warn"`, `"error"`, `"info"`, or `"debug"` (default: return all levels)
+- `limit` (optional): Maximum number of recent messages to return (default: return all captured messages)
+- `search` (optional): Filter messages containing this text (case-insensitive substring match)
+
+**Example 1: Get all captured console messages**
+```json
+{}
+```
+
+**Example 2: Get only error messages**
+```json
+{
+  "level": "error"
+}
+```
+
+**Example 3: Get last 10 warnings**
+```json
+{
+  "level": "warn",
+  "limit": 10
+}
+```
+
+**Example 4: Search for specific text**
+```json
+{
+  "search": "failed to fetch"
+}
+```
+
+**Response:**
+```json
+{
+  "messages": [
+    {
+      "type": "log",
+      "text": "User logged in successfully",
+      "timestamp": 1727832845123,
+      "args": ["User logged in successfully"]
+    },
+    {
+      "type": "error",
+      "text": "Failed to fetch /api/data",
+      "timestamp": 1727832846456,
+      "args": ["Failed to fetch /api/data"]
+    }
+  ],
+  "totalMessages": 2
+}
+```
+
+**Notes:**
+- Console capture is enabled by default with a 1000 message buffer
+- Messages from page loads, navigation, and all browser activity are captured
+- The circular buffer prevents memory issues when console is spammed
+- You can configure buffer size and enable/disable capture in the config file
+
 ### `devtools.getElement`
 
 Get detailed information about elements matching a selector or ID.
@@ -523,6 +587,26 @@ Get the source of a CSS property value, including which rule/file/line set it.
 
 - `navigationMs` (optional, default: `15000`): Navigation timeout
 - `queryMs` (optional, default: `8000`): Query timeout
+
+### `console`
+
+- `enabled` (optional, default: `true`): Enable console message capture
+- `maxMessages` (optional, default: `1000`): Maximum number of console messages to store in circular buffer. When this limit is reached, oldest messages are automatically dropped to prevent unbounded memory growth.
+
+**Example:**
+```json
+{
+  "console": {
+    "enabled": true,
+    "maxMessages": 500
+  }
+}
+```
+
+**Notes:**
+- Console capture has minimal performance impact
+- The circular buffer ensures memory usage is bounded even if the browser logs heavily
+- Disable console capture if you don't need it: `"enabled": false`
 
 ## Device Emulation
 

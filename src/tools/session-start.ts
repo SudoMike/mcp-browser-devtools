@@ -71,6 +71,10 @@ export async function sessionStart(
             navigationMs: 15_000,
             queryMs: 8_000,
           },
+          console: {
+            enabled: true,
+            maxMessages: 1000,
+          },
         };
 
     // Override headless setting if interactive mode is requested

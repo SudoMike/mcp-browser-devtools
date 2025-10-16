@@ -9,6 +9,7 @@ export interface Config {
   hooks?: HooksConfig;
   policy?: PolicyConfig;
   timeouts?: TimeoutsConfig;
+  console?: ConsoleConfig;
 }
 
 export interface PlaywrightConfig {
@@ -16,6 +17,11 @@ export interface PlaywrightConfig {
   headless?: boolean;
   storageStatePath?: string;
   traceOutputPath?: string;
+}
+
+export interface ConsoleConfig {
+  enabled?: boolean;
+  maxMessages?: number;
 }
 
 export interface HooksConfig {
@@ -66,6 +72,13 @@ export interface HookResult {
 // Session Types
 // ============================================================================
 
+export interface ConsoleMessage {
+  type: "log" | "warn" | "error" | "info" | "debug";
+  text: string;
+  timestamp: number;
+  args?: string[];
+}
+
 export interface SessionState {
   browser: Browser;
   context: BrowserContext;
@@ -74,6 +87,7 @@ export interface SessionState {
   hookStopFn?: () => void | Promise<void>;
   config: ResolvedConfig;
   lastUsedAt: number;
+  consoleMessages: ConsoleMessage[];
 }
 
 export interface ResolvedConfig {
@@ -91,6 +105,10 @@ export interface ResolvedConfig {
   timeouts: {
     navigationMs: number;
     queryMs: number;
+  };
+  console: {
+    enabled: boolean;
+    maxMessages: number;
   };
 }
 
@@ -151,6 +169,12 @@ export interface ScreenshotParams {
 export interface EvaluateJavaScriptParams {
   code: string;
   timeout?: number;
+}
+
+export interface GetConsoleLogsParams {
+  level?: "log" | "warn" | "error" | "info" | "debug";
+  limit?: number;
+  search?: string;
 }
 
 export type PageAction =
@@ -297,6 +321,11 @@ export interface ScreenshotResult {
 export interface EvaluateJavaScriptResult {
   result: unknown;
   ok: boolean;
+}
+
+export interface GetConsoleLogsResult {
+  messages: ConsoleMessage[];
+  totalMessages: number;
 }
 
 export interface CssProvenanceInfo {

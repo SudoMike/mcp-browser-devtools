@@ -210,6 +210,29 @@ class SessionManager {
       await cdpSession.send("DOM.enable");
       await cdpSession.send("CSS.enable");
 
+      // Initialize console messages array
+      const consoleMessages: SessionState["consoleMessages"] = [];
+
+      // Set up console event listener if enabled
+      if (config.console.enabled) {
+        page.on("console", (msg) => {
+          const message = {
+            type: msg.type() as "log" | "warn" | "error" | "info" | "debug",
+            text: msg.text(),
+            timestamp: Date.now(),
+            args: msg.args().map((arg) => String(arg)),
+          };
+
+          // Add message to array
+          consoleMessages.push(message);
+
+          // Enforce circular buffer limit
+          if (consoleMessages.length > config.console.maxMessages) {
+            consoleMessages.shift(); // Remove oldest message
+          }
+        });
+      }
+
       return {
         browser,
         context,
@@ -218,6 +241,7 @@ class SessionManager {
         hookStopFn,
         config,
         lastUsedAt: Date.now(),
+        consoleMessages,
       };
     } catch (err) {
       throw createError(

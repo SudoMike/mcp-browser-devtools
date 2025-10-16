@@ -67,6 +67,10 @@ export async function loadConfig(
       navigationMs: raw.timeouts?.navigationMs ?? 15_000,
       queryMs: raw.timeouts?.queryMs ?? 8_000,
     },
+    console: {
+      enabled: raw.console?.enabled ?? true,
+      maxMessages: raw.console?.maxMessages ?? 1000,
+    },
   };
 
   // Prepare hooks config

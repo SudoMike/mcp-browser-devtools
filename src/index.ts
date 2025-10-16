@@ -19,6 +19,7 @@ import type {
   GetPageContentParams,
   ScreenshotParams,
   EvaluateJavaScriptParams,
+  GetConsoleLogsParams,
 } from "./types.js";
 
 import { sessionStart } from "./tools/session-start.js";
@@ -30,6 +31,7 @@ import { pageInteract } from "./tools/page-interact.js";
 import { getPageContent } from "./tools/get-page-content.js";
 import { screenshot } from "./tools/screenshot.js";
 import { evaluateJavaScript } from "./tools/evaluate-javascript.js";
+import { getConsoleLogs } from "./tools/get-console-logs.js";
 
 // Parse CLI args
 const args = process.argv.slice(2);
@@ -479,6 +481,35 @@ const tools: Tool[] = [
       required: ["code"],
     },
   },
+  {
+    name: "devtools.console.getLogs",
+    description:
+      "Get console messages captured from the browser. " +
+      "Messages are automatically captured when console.log, console.warn, console.error, etc. are called in the browser. " +
+      "Supports filtering by log level and searching message text. " +
+      "Console capture is enabled by default with a circular buffer (oldest messages are dropped when limit is reached).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        level: {
+          type: "string",
+          enum: ["log", "warn", "error", "info", "debug"],
+          description:
+            "Filter messages by log level (default: return all levels)",
+        },
+        limit: {
+          type: "number",
+          description:
+            "Maximum number of recent messages to return (default: return all captured messages)",
+        },
+        search: {
+          type: "string",
+          description:
+            "Filter messages containing this text (case-insensitive substring match)",
+        },
+      },
+    },
+  },
 ];
 
 // Handle list tools
@@ -560,6 +591,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "devtools.page.evaluateJavaScript": {
         const result = await evaluateJavaScript(
           args as unknown as EvaluateJavaScriptParams,
+        );
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case "devtools.console.getLogs": {
+        const result = await getConsoleLogs(
+          args as unknown as GetConsoleLogsParams,
         );
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
