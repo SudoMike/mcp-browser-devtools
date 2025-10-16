@@ -164,7 +164,7 @@ class SessionManager {
 
       // Add fullscreen args if requested
       if (fullscreen && !config.playwright.headless) {
-        launchOptions.args = ["--start-fullscreen"];
+        launchOptions.args = ["--start-maximized"];
       }
 
       const browser = await chromium.launch(launchOptions);
