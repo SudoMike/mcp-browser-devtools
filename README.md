@@ -14,14 +14,32 @@ An MCP (Model Context Protocol) server that provides DevTools-style browser insp
 
 ## Installation
 
+### From the package index
 ```bash
 npm install mcp-browser-devtools
 ```
+
+### From source
+_This will allow you to run `mcp-browser-devtools` from the command line on your system._
+
+```bash
+npm i
+npm run build
+npm link
+```
+
 
 **Note**: This package has a peer dependency on `playwright`. Make sure Playwright is installed in your project:
 
 ```bash
 npm install playwright
+
+# Get the list of system dependencies to install for playwright to be able to run.
+# You can apt install these.
+npm exec playwright -- install-deps --dry-run
+
+# Install the browser.
+npm exec playwright -- install
 ```
 
 ## Quick Start
