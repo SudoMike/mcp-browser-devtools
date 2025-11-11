@@ -153,6 +153,25 @@ export async function startMobile({ page, baseURL }) {
 npx mcp-browser-devtools --config mcp-browser-devtools.config.json
 ```
 
+### Test-Drive Mode
+
+You can quickly test that your config and setup are correct without having to drive it via an MCP client by using the `--test-drive` option. This launches a browser session directly in interactive (headed) mode:
+
+```bash
+npx mcp-browser-devtools --config mcp-browser-devtools.config.json --test-drive [scenario]
+```
+
+**Examples:**
+```bash
+# Test-drive with a specific scenario
+npx mcp-browser-devtools --config mcp-browser-devtools.config.json --test-drive loggedIn
+
+# Test-drive without a scenario (browser launches without hooks)
+npx mcp-browser-devtools --config mcp-browser-devtools.config.json --test-drive
+```
+
+**Note:** The `--test-drive` option requires `--config` to be specified. The browser will launch in interactive mode (visible window) and run the specified scenario hook if provided. Press Ctrl+C to stop the session.
+
 ## MCP Tools
 
 ### `devtools.session.start`
