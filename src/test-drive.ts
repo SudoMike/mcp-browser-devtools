@@ -79,4 +79,3 @@ export async function runTestDrive(
   // Don't start MCP server in test-drive mode
   // Process will exit when user presses Ctrl+C
 }
-
